@@ -80,7 +80,8 @@ class Backup(object):
 
         # delete old objects
         archive_list = [obj for obj in objects_list
-                        if obj.startswith(objectname + '_')].sort()
+                        if obj.startswith(objectname + '_')]
+        archiver_list.reverse()
         [client.remove_object(self.token, self.storage_url,
                               self.container_name, obj)
          for i, obj in enumerate(archive_list) if i > rotate_limit - 1]
