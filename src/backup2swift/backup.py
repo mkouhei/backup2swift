@@ -36,11 +36,13 @@ class Backup(object):
         object_name = os.path.basename(filename)
 
         if client.is_container(self.token, self.storage_url,
-                               self.container_name) != 200:
+                               self.container_name) == 204:
+            # 204; No Content
             rc = client.create_container(self.token,
                                          self.storage_url,
                                          self.container_name)
-            if rc != 201:
+            if not (rc == 201 or rc == 202):
+                # 201; Created, 202; Accepted
                 raise RuntimeError('failed to create the container "%s".'
                                    % self.container_name)
 
@@ -48,15 +50,18 @@ class Backup(object):
                         client.list_objects(self.token,
                                             self.storage_url,
                                             self.container_name)]
+        print objects_list
+        print object_name
+
         if object_name in objects_list:
             #rotate(filename, objects_list, rotate_limit)
-            rotate(filename, object_name, objects_list)
+            self.rotate(filename, object_name, objects_list)
         else:
             rc = client.create_object(self.token,
                                       self.storage_url,
                                       self.container_name,
                                       filename)
-            if rc != 201:
+            if not (rc == 201 or rc == 202):
                 raise RuntimeError('failed to create the object "%s".'
                                    % object_name)
 
@@ -67,6 +72,7 @@ class Backup(object):
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         new_object_name = object_name + '_' + timestamp
         rc = client.copy_object(self.token, self.storage_url,
+                                self.container_name,
                                 object_name, new_object_name)
         if rc != 201:
             raise RuntimeError('failed to copy object "%s".' % new_object_name)
@@ -80,8 +86,8 @@ class Backup(object):
 
         # delete old objects
         archive_list = [obj for obj in objects_list
-                        if obj.startswith(objectname + '_')]
-        archiver_list.reverse()
-        [client.remove_object(self.token, self.storage_url,
+                        if obj.startswith(object_name + '_')]
+        archive_list.reverse()
+        [client.delete_object(self.token, self.storage_url,
                               self.container_name, obj)
-         for i, obj in enumerate(archive_list) if i > rotate_limit - 1]
+         for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
