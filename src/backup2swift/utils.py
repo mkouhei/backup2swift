@@ -15,4 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.1'
+import syslog
+
+
+def logging(priority, message):
+    syslog.openlog('bu2sw', syslog.LOG_PID, syslog.LOG_LOCAL0)
+    syslog.syslog(priority, str(message))
+    syslog.closelog()
+    print(message)
+    exit(1)
