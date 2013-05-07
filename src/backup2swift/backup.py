@@ -57,8 +57,6 @@ class Backup(object):
                         client.list_objects(self.token,
                                             self.storage_url,
                                             self.container_name)]
-        print objects_list
-        print object_name
 
         if object_name in objects_list:
             self.rotate(filename, object_name, objects_list)
@@ -97,3 +95,15 @@ class Backup(object):
         [client.delete_object(self.token, self.storage_url,
                               self.container_name, obj)
          for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
+
+    def retrieve_backup_data_list(self, verbose=False):
+        if verbose:
+            backup_l = [i for i in client.list_objects(self.token,
+                                                       self.storage_url,
+                                                       self.container_name)]
+        else:
+            backup_l = [i.get('name') for i
+                        in client.list_objects(self.token,
+                                               self.storage_url,
+                                               self.container_name)]
+        return backup_l

@@ -26,7 +26,8 @@ def parse_options():
     parser = argparse.ArgumentParser(description='usage')
     setoption(parser, 'version')
     setoption(parser, 'config')
-    setoption(parser, 'target_path')
+    setoption(parser, 'command')
+    setoption(parser, 'verbose')
     args = parser.parse_args()
     return args
 
@@ -39,17 +40,29 @@ def setoption(parser, keyword):
         parser.add_argument('-c', '--config', action='store',
                             required=True,
                             help='configuraton file of backup2swift')
-    elif keyword == 'target_path':
-                parser.add_argument('target_path', action='store',
-                                    help='target file/dir path of backup')
-    parser.set_defaults(func=backup_to_swift)
+    elif keyword == 'verbose':
+        parser.add_argument('-v', '--verbose', action='store_true',
+                            help='list verbose')
+    elif keyword == 'command':
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument('-l', '--list', action='store_true',
+                           help='listing object data')
+        group.add_argument('-p', '--path', action='store',
+                           help='target file/dir path of backup')
+        parser.set_defaults(func=execute_swift_client)
 
 
-def backup_to_swift(args):
+def execute_swift_client(args):
     (auth_url, username,
      password, rotate_limit) = config.check_config(args.config)
     b = backup.Backup(auth_url, username, password)
-    b.backup(args.target_path)
+    if args.list:
+        # listing backup data
+        backup_l = b.retrieve_backup_data_list(args.verbose)
+        utils.list_data(backup_l)
+    elif args.path:
+        # backup data to swift
+        b.backup(args.path)
 
 
 def main():
