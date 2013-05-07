@@ -35,6 +35,11 @@ def logging(priority, message):
 
 
 def list_data(data):
+    """
+
+    Argument:
+        data: list of data
+    """
     for i in data:
         if isinstance(i, unicode):
             print(i)
@@ -44,6 +49,12 @@ def list_data(data):
 
 
 def pretty_print(header, rows):
+    """
+
+    Arguments:
+        header: list of header data
+        rows:   list of data
+    """
     # formatting header
     header.sort()
     header.reverse()
@@ -61,6 +72,13 @@ def pretty_print(header, rows):
 
 
 def get_columns_width(columns_width, header, rows):
+    """
+
+    Arguments:
+        columns_width: list of columns string length
+        header:        list of header data
+        rows:          list of data
+    """
     for row in rows:
         for i, key in enumerate(header):
             value = str(row.get(key))
@@ -71,24 +89,42 @@ def get_columns_width(columns_width, header, rows):
     return columns_width
 
 
-def print_header(cols_width, header):
+def print_header(columns_width, header):
+    """
+
+    Arguments:
+        columns_width: list of columns string length
+        header:        list of header data
+    """
     border = '+'
-    for col_width in cols_width:
+    for col_width in columns_width:
         border += "-" * (col_width + 1) + '-+'
 
-    sys.stdout.write("%s\n" % border)
-    print(generate_row_s(header, cols_width))
-    sys.stdout.write("%s\n" % border)
+    print("%s\n" % border)
+    print(generate_row_s(header, columns_width))
+    print("%s\n" % border)
 
 
-def print_footer(cols_width):
+def print_footer(columns_width):
+    """
+
+    Argument:
+        columns_width: list of columns string length
+    """
     border = '+'
-    for i, col_width in enumerate(cols_width):
+    for i, col_width in enumerate(columns_width):
         border += "-" * (col_width + 1) + '-+'
-    sys.stdout.write("%s\n" % border)
+    print("%s\n" % border)
 
 
 def generate_row_s(row, columns_width, header=None):
+    """
+
+    Arguments:
+        row:           data of row
+        columns_width: list of columns string length
+        header:        list of header data
+    """
     row_s = ''
 
     if header:

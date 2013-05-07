@@ -34,12 +34,22 @@ class Backup(object):
         self.container_name = container_name
 
     def backup(self, target_path):
+        """
+
+        Argument:
+            target_path: path of backup target file or directory
+        """
         if os.path.isdir(target_path):
             [self.backup_file(f) for f in glob.glob(target_path + '/*')]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
 
     def backup_file(self, filename):
+        """
+
+        Argument:
+            filename: path of backup target file
+        """
         object_name = os.path.basename(filename)
 
         if client.is_container(self.token, self.storage_url,
@@ -71,7 +81,14 @@ class Backup(object):
 
     def rotate(self, filename, object_name, objects_list,
                rotate_limit=ROTATE_LIMIT):
+        """
 
+        Arguments:
+            filename:     filename of backup target
+            object_name:  name of object on Swift
+            objects_list: list of objects on Swift
+            rotate_limit: limitation of backup rotation
+        """
         # copy current object to new object
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         new_object_name = object_name + '_' + timestamp
@@ -97,6 +114,11 @@ class Backup(object):
          for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
 
     def retrieve_backup_data_list(self, verbose=False):
+        """
+
+        Argument:
+            verbose: boolean flag of listing objects
+        """
         if verbose:
             backup_l = [i for i in client.list_objects(self.token,
                                                        self.storage_url,

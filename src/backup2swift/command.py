@@ -33,6 +33,12 @@ def parse_options():
 
 
 def setoption(parser, keyword):
+    """
+
+    Arguments:
+        parser: object of argparse
+        keyword: switching keyword
+    """
     if keyword == 'version':
         parser.add_argument('-V', '--version', action='version',
                             version=__version__)
@@ -53,6 +59,11 @@ def setoption(parser, keyword):
 
 
 def execute_swift_client(args):
+    """
+
+    Argument:
+        args: argument object
+    """
     (auth_url, username,
      password, rotate_limit) = config.check_config(args.config)
     b = backup.Backup(auth_url, username, password)
