@@ -17,10 +17,17 @@
 """
 import syslog
 import sys
+from __init__ import __NAME__
 
 
 def logging(priority, message):
-    syslog.openlog('bu2sw', syslog.LOG_PID, syslog.LOG_LOCAL0)
+    """
+
+    Arguments:
+        priority: syslog priority
+        message: log message
+    """
+    syslog.openlog(__NAME__, syslog.LOG_PID, syslog.LOG_LOCAL0)
     syslog.syslog(priority, str(message))
     syslog.closelog()
     print(message)
