@@ -100,9 +100,9 @@ def print_header(columns_width, header):
     for col_width in columns_width:
         border += "-" * (col_width + 1) + '-+'
 
-    print("%s\n" % border)
+    print("%s" % border)
     print(generate_row_s(header, columns_width))
-    print("%s\n" % border)
+    print("%s" % border)
 
 
 def print_footer(columns_width):
@@ -114,7 +114,7 @@ def print_footer(columns_width):
     border = '+'
     for i, col_width in enumerate(columns_width):
         border += "-" * (col_width + 1) + '-+'
-    print("%s\n" % border)
+    print("%s" % border)
 
 
 def generate_row_s(row, columns_width, header=None):
