@@ -43,6 +43,7 @@ class Backup(object):
             [self.backup_file(f) for f in glob.glob(target_path + '/*')]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
+        return True
 
     def backup_file(self, filename):
         """
@@ -78,6 +79,7 @@ class Backup(object):
             if not (rc == 201 or rc == 202):
                 raise RuntimeError('failed to create the object "%s".'
                                    % object_name)
+        return True
 
     def rotate(self, filename, object_name, objects_list,
                rotate_limit=ROTATE_LIMIT):
@@ -112,6 +114,7 @@ class Backup(object):
         [client.delete_object(self.token, self.storage_url,
                               self.container_name, obj)
          for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
+        return True
 
     def retrieve_backup_data_list(self, verbose=False):
         """
