@@ -26,7 +26,7 @@ def parse_options():
     parser = argparse.ArgumentParser(description='usage')
     setoption(parser, 'version')
     setoption(parser, 'config')
-    setoption(parser, 'target_filepath')
+    setoption(parser, 'target_path')
     args = parser.parse_args()
     return args
 
@@ -39,9 +39,9 @@ def setoption(parser, keyword):
         parser.add_argument('-c', '--config', action='store',
                             required=True,
                             help='configuraton file of backup2swift')
-    elif keyword == 'target_filepath':
-                parser.add_argument('target_file', action='store',
-                                    help='target file path of backup')
+    elif keyword == 'target_path':
+                parser.add_argument('target_path', action='store',
+                                    help='target file/dir path of backup')
     parser.set_defaults(func=backup_to_swift)
 
 
@@ -49,7 +49,7 @@ def backup_to_swift(args):
     (auth_url, username,
      password, rotate_limit) = config.check_config(args.config)
     b = backup.Backup(auth_url, username, password)
-    b.backup(args.target_file)
+    b.backup(args.target_path)
 
 
 def main():

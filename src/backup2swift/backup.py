@@ -18,6 +18,7 @@
 from swiftsc import client
 import socket
 import os.path
+import glob
 from datetime import datetime
 
 
@@ -32,7 +33,13 @@ class Backup(object):
                                                              password)
         self.container_name = container_name
 
-    def backup(self, filename):
+    def backup(self, target_path):
+        if os.path.isdir(target_path):
+            [self.backup_file(f) for f in glob.glob(target_path + '/*')]
+        elif os.path.isfile(target_path):
+            self.backup_file(target_path)
+
+    def backup_file(self, filename):
         object_name = os.path.basename(filename)
 
         if client.is_container(self.token, self.storage_url,
@@ -54,7 +61,6 @@ class Backup(object):
         print object_name
 
         if object_name in objects_list:
-            #rotate(filename, objects_list, rotate_limit)
             self.rotate(filename, object_name, objects_list)
         else:
             rc = client.create_object(self.token,
