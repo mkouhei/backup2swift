@@ -25,4 +25,8 @@ import backup2swift.config as c
 class ConfigTests(unittest.TestCase):
 
     def test_check_config(self):
-        pass
+        self.assertEqual(('https://example.org/auth/v1.0',
+                         'username',
+                         'password',
+                         '10'),
+                         c.check_config('examples/bu2sw.conf'))
