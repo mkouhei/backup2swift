@@ -15,5 +15,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.1'
-__NAME__ = 'bu2sw'
+import unittest
+import sys
+import os.path
+sys.path.append(os.path.abspath('src'))
+import backup2swift.config as c
+
+
+class ConfigTests(unittest.TestCase):
+
+    def test_check_config(self):
+        self.assertEqual(('https://example.org/auth/v1.0',
+                         'username',
+                         'password',
+                         '10'),
+                         c.check_config('examples/bu2sw.conf'))

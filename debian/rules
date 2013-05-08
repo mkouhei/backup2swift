@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_test:
+	set -e; \
+	py.test -v $(CURDIR)/_build
+
+override_dh_install:
+	dh_install
+	find $(CURDIR)/debian/python-backup2swift -name "*pyc" -delete
+	find $(CURDIR)/debian/python-backup2swift -type d -a -empty -delete
+	rm -rf $(CURDIR)/debian/python-backup2swift/usr/share/pyshared/backup2swift_tests
+	rm -rf $(CURDIR)/debian/python-backup2swift/usr/lib/python2.6/dist-packages/backup2swift_tests
+	rm -rf $(CURDIR)/debian/python-backup2swift/usr/lib/python2.7/dist-packages/backup2swift_tests

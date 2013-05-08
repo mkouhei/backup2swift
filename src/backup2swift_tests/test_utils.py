@@ -15,5 +15,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.1'
-__NAME__ = 'bu2sw'
+import unittest
+import sys
+import os.path
+sys.path.append(os.path.abspath('src'))
+import backup2swift.utils as u
+
+
+class UtilsTests(unittest.TestCase):
+
+    def test_get_columns_width(self):
+        pass
+
+    def test_generate_row_s(self):
+        pass

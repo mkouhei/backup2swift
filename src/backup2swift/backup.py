@@ -18,49 +18,117 @@
 from swiftsc import client
 import socket
 import os.path
+import glob
 from datetime import datetime
 
 
 ROTATE_LIMIT = 10
 FQDN = socket.getfqdn()
 
+
 class Backup(object):
     def __init__(self, auth_url, username, password, container_name=FQDN):
-        self.token, self.storage_url = client.retrieve_token(auth_url, username, password)
+        self.token, self.storage_url = client.retrieve_token(auth_url,
+                                                             username,
+                                                             password)
         self.container_name = container_name
 
-    def backup(self, filename):
-        object_name = os.path.basename(filename)
-        
-        if client.is_container(self.token, self.storage_url, self.container_name) != 200:
-            rc = client.create_container(self.token, self.storage_url, self.container_name)
-            if rc != 201:
-                raise RuntimeError('failed to create the container "%s".' % self.container_name)
-        
-        objects_list = [object.get('name') for object in
-                        client.list_objects(self.token, self.storage_url, self.container_name)]
-        if object_name in objects_list:
-            #rotate(filename, objects_list, rotate_limit)
-            rotate(filename, object_name, objects_list)
-        else:
-            rc = client.create_object(self.token, self.storage_url, self.container_name, filename)
-            if rc != 201:
-                raise RuntimeError('failed to create the object "%s".' % object_name)
-        
-    def rotate(self, filename, object_name, objects_list, rotate_limit=ROTATE_LIMIT):
+    def backup(self, target_path):
+        """
 
+        Argument:
+            target_path: path of backup target file or directory
+        """
+        if os.path.isdir(target_path):
+            [self.backup_file(f) for f in glob.glob(target_path + '/*')]
+        elif os.path.isfile(target_path):
+            self.backup_file(target_path)
+        return True
+
+    def backup_file(self, filename):
+        """
+
+        Argument:
+            filename: path of backup target file
+        """
+        object_name = os.path.basename(filename)
+
+        if client.is_container(self.token, self.storage_url,
+                               self.container_name) == 204:
+            # 204; No Content
+            rc = client.create_container(self.token,
+                                         self.storage_url,
+                                         self.container_name)
+            if not (rc == 201 or rc == 202):
+                # 201; Created, 202; Accepted
+                raise RuntimeError('failed to create the container "%s".'
+                                   % self.container_name)
+
+        objects_list = [object.get('name') for object in
+                        client.list_objects(self.token,
+                                            self.storage_url,
+                                            self.container_name)]
+
+        if object_name in objects_list:
+            self.rotate(filename, object_name, objects_list)
+        else:
+            rc = client.create_object(self.token,
+                                      self.storage_url,
+                                      self.container_name,
+                                      filename)
+            if not (rc == 201 or rc == 202):
+                raise RuntimeError('failed to create the object "%s".'
+                                   % object_name)
+        return True
+
+    def rotate(self, filename, object_name, objects_list,
+               rotate_limit=ROTATE_LIMIT):
+        """
+
+        Arguments:
+            filename:     filename of backup target
+            object_name:  name of object on Swift
+            objects_list: list of objects on Swift
+            rotate_limit: limitation of backup rotation
+        """
         # copy current object to new object
-        new_object_name = object_name + '_' + datetime.now().strftime("%Y%m%d-%H%M%S")
-        rc = client.copy_object(self.token, self.storage_url, object_name, new_object_name)
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        new_object_name = object_name + '_' + timestamp
+        rc = client.copy_object(self.token, self.storage_url,
+                                self.container_name,
+                                object_name, new_object_name)
         if rc != 201:
             raise RuntimeError('failed to copy object "%s".' % new_object_name)
 
         # create new object
-        rc = client.create_object(self.token, self.storage_url, self.container_name, filename)
+        rc = client.create_object(self.token, self.storage_url,
+                                  self.container_name, filename)
         if rc != 201:
-            raise RuntimeError('failed to create the object "%s".' % object_name)
+            raise RuntimeError('failed to create the object "%s".'
+                               % object_name)
 
         # delete old objects
-        archive_list = [obj for obj in objects_list if obj.startswith(objectname + '_')].sort()
-        [client.remove_object(self.token, self.storage_url, self.container_name, obj)
-         for i, obj in enumerate(archive_list) if i > rotate_limit - 1]
+        archive_list = [obj for obj in objects_list
+                        if obj.startswith(object_name + '_')]
+        archive_list.reverse()
+        [client.delete_object(self.token, self.storage_url,
+                              self.container_name, obj)
+         for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
+        return True
+
+    def retrieve_backup_data_list(self, verbose=False):
+        """
+
+        Argument:
+            verbose: boolean flag of listing objects
+        """
+        if verbose:
+            backup_l = [i for i in client.list_objects(self.token,
+                                                       self.storage_url,
+                                                       self.container_name)]
+        else:
+            backup_l = [i.get('name') for i
+                        in client.list_objects(self.token,
+                                               self.storage_url,
+                                               self.container_name)]
+        return backup_l

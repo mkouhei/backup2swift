@@ -1,0 +1,57 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH BU2SW 1 "May 7, 2013"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+bu2sw \- backup data to OpenStack Swift
+.SH SYNOPSIS
+.B bu2sw
+.RI [ options ] " (file|directory)"
+.br
+.SH DESCRIPTION
+This manual page documents briefly the
+.B bu2sw
+commands.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBbu2sw\fP is a command line tool for backup data to OpenStack Swift. provides features are command line interface, and backup rotatition.
+
+.SH OPTIONS
+These programs follow the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+A summary of options is included below.
+For a complete description, see the Info files.
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-V, \-\-version
+Show program's version number.
+.TP
+.B \-c config, \-\-config CONFIG
+Specify configuration file
+.TP
+.SH SEE ALSO
+.br
+The programs are documented by
+.IR "README.rst".
+.SH AUTHOR
+iori was written by Kouhei Maeda <mkouhei@palmtb.net>.
+.PP
+This manual page was written by Kouhei Maeda <mkouhei@palmtb.net>.
+for the Debian project (and may be used by others).
