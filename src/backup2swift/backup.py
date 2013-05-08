@@ -54,7 +54,7 @@ class Backup(object):
         object_name = os.path.basename(filename)
 
         if client.is_container(self.token, self.storage_url,
-                               self.container_name) == 204:
+                               self.container_name) == 404:
             # 204; No Content
             rc = client.create_container(self.token,
                                          self.storage_url,
@@ -122,6 +122,10 @@ class Backup(object):
         Argument:
             verbose: boolean flag of listing objects
         """
+        if client.is_container(self.token, self.storage_url,
+                               self.container_name) == 404:
+            return []
+
         if verbose:
             backup_l = [i for i in client.list_objects(self.token,
                                                        self.storage_url,
