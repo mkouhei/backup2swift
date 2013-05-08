@@ -107,9 +107,15 @@ class BackupTests(unittest.TestCase):
         self.assertEqual(self.b.rotate(v.test_file, v.object_name,
                                        v.objects_name_l), True)
 
+    @patch('swiftsc.client.is_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.objects)
-    def test_retrieve_backup_data_list(self, m):
+    def test_retrieve_backup_data_list(self, m1, m2):
         self.assertEqual(self.b.retrieve_backup_data_list(),
                          v.objects_name_l)
         self.assertEqual(self.b.retrieve_backup_data_list(True),
                          v.objects)
+
+    @patch('swiftsc.client.is_container', return_value=404)
+    def test_retrieve_backup_data_list(self, m):
+        self.assertEqual(self.b.retrieve_backup_data_list(),
+                         [])
