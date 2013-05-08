@@ -64,7 +64,7 @@ setup(name='backup2swift',
       tests_require=['pytest','pep8','mock'],
       entry_points={
         "console_scripts": [
-            "bu2sw = backup2swift.commands:main",
+            "bu2sw = backup2swift.command:main",
             ]
         },
 )
