@@ -32,23 +32,78 @@ class BackupTests(unittest.TestCase):
         self.b = b.Backup(v.auth_url, v.username, v.password)
 
     @patch('swiftsc.client.is_container', return_value=201)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=201)
+    def test_backup(self, m1, m2, m3):
+        self.assertEqual(self.b.backup("."), True)
+
+    @patch('swiftsc.client.is_container', return_value=204)
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.objects)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup(self, m1, m2, m3, m4):
-        self.assertEqual(self.b.backup("."), True)
+    def test_backup_file_with_create_cont(self, m1, m2, m3, m4):
+        self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
+
+    @patch('swiftsc.client.is_container', return_value=204)
+    @patch('swiftsc.client.create_container', return_value=202)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=201)
+    def test_backup_file_with_created_cont(self, m1, m2, m3, m4):
+        self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=204)
+    @patch('swiftsc.client.create_container', return_value=400)
+    def test_backup_faile_fail_create_cont(self, m1, m2):
+        self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
+
+    @patch('swiftsc.client.is_container', return_value=204)
+    @patch('swiftsc.client.create_container', return_value=202)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=201)
+    def test_backup_file_create_object(self, m1, m2, m3, m4):
+        self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
 
     @patch('swiftsc.client.is_container', return_value=201)
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.objects)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file(self, m1, m2, m3, m4):
+    @patch('swiftsc.client.create_object', return_value=202)
+    def test_backup_file_override(self, m1, m2, m3, m4):
+        self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=201)
+    @patch('swiftsc.client.create_container', return_value=201)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=400)
+    def test_backup_file_fail(self, m1, m2, m3, m4):
         self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
 
     @patch('swiftsc.client.copy_object', return_value=201)
     @patch('swiftsc.client.create_object', return_value=201)
     @patch('swiftsc.client.delete_object', return_value=204)
     def test_rotate(self, m1, m2, m3):
+        self.assertEqual(self.b.rotate(v.test_file, v.object_name,
+                                       v.objects_name_l), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.copy_object', return_value=400)
+    def test_rotate_fail_copy(self, m1):
+        self.assertEqual(self.b.rotate(v.test_file, v.object_name,
+                                       v.objects_name_l), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.copy_object', return_value=201)
+    @patch('swiftsc.client.create_object', return_value=400)
+    def test_rotate_fail_create(self, m1, m2):
+        self.assertEqual(self.b.rotate(v.test_file, v.object_name,
+                                       v.objects_name_l), True)
+
+    # ToDo should add raise exception when delete object?
+    @patch('swiftsc.client.copy_object', return_value=201)
+    @patch('swiftsc.client.create_object', return_value=201)
+    @patch('swiftsc.client.delete_object', return_value=400)
+    def test_rotate_fail_delete(self, m1, m2, m3):
         self.assertEqual(self.b.rotate(v.test_file, v.object_name,
                                        v.objects_name_l), True)
 
