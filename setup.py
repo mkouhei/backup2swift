@@ -42,7 +42,7 @@ long_description = \
 requires = ['setuptools', 'swiftsc']
 
 setup(name='backup2swift',
-      version='0.1',
+      version=backup2swift.__version__,
       description='Backup data to OpenStack Swift',
       long_description=long_description,
       author='Kouhei Maeda',
