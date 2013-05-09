@@ -9,8 +9,8 @@ This tool is depend on swiftsc, that is simple client library of OpenStack Swift
 Requirements
 ------------
 
-* Python 2.7 or Python 3.2
-* swift 0.1.1 lator
+* Python 2.6 or Python 3.2
+* swiftsc 0.1.3 lator
 
 
 Setup
@@ -29,7 +29,7 @@ Firstly copy pre-commit hook script.::
 
    $ cp -f utils/pre-commit.txt .git/hooks/pre-commit
 
-Next install python2.7 later, and python-swiftsc, py.test. Below in Debian GNU/Linux Sid system,::
+Next install python2.6 later, and python-swiftsc, py.test. Below in Debian GNU/Linux Sid system,::
 
    $ sudo apt-get install python python-swiftsc python-pytest pep8
 
