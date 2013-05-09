@@ -20,6 +20,7 @@ if sys.version_info > (2, 6) and sys.version_info < (2, 8):
     import ConfigParser as configparser
 elif sys.version_info > (3, 0):
     import configpaser
+import utils
 
 
 def check_config(filename):
@@ -29,7 +30,15 @@ def check_config(filename):
 
         filename: config file path (default is ~/.bu2sw.conf)
     """
-    conf = configparser.SafeConfigParser(allow_no_value=False)
+    try:
+        conf = configparser.SafeConfigParser(allow_no_value=False)
+    except TypeError as error:
+        msg = "__init__() got an unexpected keyword argument 'allow_no_value'"
+        if str(error) == msg:
+            # for argparse using python 2.6
+            conf = configparser.SafeConfigParser()
+        else:
+            utils.logging(3, error)
     conf.read(filename)
     try:
         auth_url = conf.get('swift', 'auth_url')
