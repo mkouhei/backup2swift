@@ -10,7 +10,7 @@ Requirements
 ------------
 
 * Python 2.6 or Python 3.2
-* swiftsc 0.1.3 lator
+* swiftsc 0.2 later
 
 
 Setup
