@@ -8,7 +8,9 @@
 
 override_dh_auto_test:
 	set -e; \
-	py.test -v $(CURDIR)/_build
+	for py in $(shell pyversions -vr); do \
+		py.test-$$py -v $(CURDIR)/_build/lib.$(shell python -c 'import distutils.util as d; print d.get_platform()')-$$py; \
+	done
 
 override_dh_install:
 	dh_install
@@ -17,3 +19,7 @@ override_dh_install:
 	rm -rf $(CURDIR)/debian/python-backup2swift/usr/share/pyshared/backup2swift_tests
 	rm -rf $(CURDIR)/debian/python-backup2swift/usr/lib/python2.6/dist-packages/backup2swift_tests
 	rm -rf $(CURDIR)/debian/python-backup2swift/usr/lib/python2.7/dist-packages/backup2swift_tests
+
+override_dh_clean:
+	dh_clean
+	rm -rf $(CURDIR)/_build

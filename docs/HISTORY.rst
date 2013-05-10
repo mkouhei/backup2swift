@@ -1,6 +1,12 @@
 History
 -------
 
+0.1.3 (2012-05-10)
+^^^^^^^^^^^^^^^^^^
+
+* applied changing api of swiftsc.client.is_container()
+* add how to setup and usage
+
 0.1.2 (2012-05-09)
 ^^^^^^^^^^^^^^^^^^
 
