@@ -55,6 +55,8 @@ def setoption(parser, keyword):
                            help='listing object data')
         group.add_argument('-p', '--path', action='store',
                            help='target file/dir path of backup')
+        group.add_argument('-d', '--delete', action='store',
+                           help='delete backup data')
         parser.set_defaults(func=execute_swift_client)
 
 
@@ -74,6 +76,9 @@ def execute_swift_client(args):
     elif args.path:
         # backup data to swift
         b.backup(args.path)
+    elif args.delete:
+        # delete backup data
+        b.delete_backup_data(args.delete)
 
 
 def main():

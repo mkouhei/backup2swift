@@ -119,3 +119,27 @@ class BackupTests(unittest.TestCase):
     def test_retrieve_backup_data_list(self, m):
         self.assertEqual(self.b.retrieve_backup_data_list(),
                          [])
+
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=True)
+    @patch('swiftsc.client.delete_object', return_value=204)
+    def test_delete_backup_data(self, m1, m2, m3):
+        self.assertEqual(self.b.delete_backup_data("dummy"), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=False)
+    def test_delete_backup_data_without_container(self, m):
+        self.assertEqual(self.b.delete_backup_data("dummy"), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=False)
+    def test_delete_backup_data_without_object(self, m1, m2):
+        self.assertEqual(self.b.delete_backup_data("dummy"), True)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=True)
+    @patch('swiftsc.client.delete_object', return_value=False)
+    def test_delete_backup_data_runtime_error(self, m1, m2, m3):
+        self.assertEqual(self.b.delete_backup_data("dummy"), True)

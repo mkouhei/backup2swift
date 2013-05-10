@@ -61,7 +61,7 @@ class Backup(object):
                                          self.container_name)
             if not (rc == 201 or rc == 202):
                 # 201; Created, 202; Accepted
-                raise RuntimeError('failed to create the container "%s".'
+                raise RuntimeError('Failed to create the container "%s"'
                                    % self.container_name)
 
         objects_list = [object.get('name') for object in
@@ -77,7 +77,7 @@ class Backup(object):
                                       self.container_name,
                                       filename)
             if not (rc == 201 or rc == 202):
-                raise RuntimeError('failed to create the object "%s".'
+                raise RuntimeError('Failed to create the object "%s"'
                                    % object_name)
         return True
 
@@ -98,13 +98,13 @@ class Backup(object):
                                 self.container_name,
                                 object_name, new_object_name)
         if rc != 201:
-            raise RuntimeError('failed to copy object "%s".' % new_object_name)
+            raise RuntimeError('Failed to copy object "%s"' % new_object_name)
 
         # create new object
         rc = client.create_object(self.token, self.storage_url,
                                   self.container_name, filename)
         if rc != 201:
-            raise RuntimeError('failed to create the object "%s".'
+            raise RuntimeError('Failed to create the object "%s"'
                                % object_name)
 
         # delete old objects
@@ -136,3 +136,24 @@ class Backup(object):
                                                self.storage_url,
                                                self.container_name)]
         return backup_l
+
+    def delete_backup_data(self, object_name):
+        """
+
+        Argument:
+            object_name: delete target object name
+        """
+        if (client.is_container(self.token, self.storage_url,
+                                self.container_name) and
+            client.is_object(self.token, self.storage_url,
+                             self.container_name, object_name)):
+            rc = client.delete_object(self.token,
+                                      self.storage_url,
+                                      self.container_name,
+                                      object_name)
+            if not rc == 204:
+                raise RuntimeError('Failed to delete the object "%s"'
+                                   % object_name)
+            return True
+        else:
+            raise RuntimeError('No such object "%s"' % object_name)
