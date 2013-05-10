@@ -1,6 +1,12 @@
 History
 -------
 
+0.2 (2012-05-10)
+^^^^^^^^^^^^^^^^
+
+* add backup object command
+* fixes man manual
+
 0.1.3 (2012-05-10)
 ^^^^^^^^^^^^^^^^^^
 
