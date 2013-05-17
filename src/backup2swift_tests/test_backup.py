@@ -143,3 +143,27 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.delete_object', return_value=False)
     def test_delete_backup_data_runtime_error(self, m1, m2, m3):
         self.assertEqual(self.b.delete_backup_data("dummy"), True)
+
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=True)
+    @patch('swiftsc.client.retrieve_object', return_value=(True, ''))
+    def test_retrieve_backup_data(self, m1, m2, m3):
+        self.assertEqual(self.b.retrieve_backup_data("dummy"), None)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=False)
+    def test_retrieve_backup_data_without_container(self, m):
+        self.assertEqual(self.b.retrieve_backup_data("dummy"), None)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=False)
+    def test_retrieve_backup_data_without_object(self, m1, m2):
+        self.assertEqual(self.b.retrieve_backup_data("dummy"), None)
+
+    @unittest.expectedFailure
+    @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.is_object', return_value=True)
+    @patch('swiftsc.client.retrieve_object', return_value=(False, ''))
+    def test_retrieve_backup_data(self, m1, m2, m3):
+        self.assertEqual(self.b.retrieve_backup_data("dummy"), None)

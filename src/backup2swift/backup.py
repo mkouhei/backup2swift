@@ -137,6 +137,36 @@ class Backup(object):
                                                self.container_name)]
         return backup_l
 
+    def retrieve_backup_data(self, object_name, output_filepath=None):
+        """
+
+        Argument:
+            object_name: delete target object name
+        """
+        if (client.is_container(self.token, self.storage_url,
+                                self.container_name) and
+            client.is_object(self.token, self.storage_url,
+                             self.container_name, object_name)):
+            rc, content = client.retrieve_object(self.token,
+                                                 self.storage_url,
+                                                 self.container_name,
+                                                 object_name)
+            if not rc:
+                raise RuntimeError('Failed to retrieve the object "%s"'
+                                   % object_name)
+            if output_filepath:
+                fpath = os.path.abspath(output_filepath)
+                dpath = os.path.dirname(fpath)
+                if not os.path.isdir(dpath):
+                    raise IOError('No such directory "%s"' % dpath)
+            else:
+                dpath = os.path.abspath(os.curdir)
+                fpath = os.path.join(dpath, object_name)
+            with open(fpath, 'w') as f:
+                f.write(content)
+        else:
+            raise RuntimeError('No such object "%s"' % object_name)
+
     def delete_backup_data(self, object_name):
         """
 
