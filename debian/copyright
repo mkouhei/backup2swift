@@ -3,11 +3,11 @@ Upstream-Name: backup2swift
 Source: https://github.com/mkouhei/backup2swift
 
 Files: *
-Copyright: 2012 Kouhei Maeda <mkouhei@palmtb.net>
+Copyright: 2013 Kouhei Maeda <mkouhei@palmtb.net>
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2012 Kouhei Maeda <mkouhei@palmtb.net>
+Copyright: 2013 Kouhei Maeda <mkouhei@palmtb.net>
 License: GPL-3.0+
 
 License: GPL-3.0+

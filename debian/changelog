@@ -1,5 +1,5 @@
-backup2swift (0.2-1) unstable; urgency=low
+backup2swift (0.3-1) unstable; urgency=low
 
   * Initial release (Closes: #nnnnnn)
 
- -- Kouhei Maeda <mkouhei@palmtb.net>  Fri, 10 May 2013 20:34:52 +0900
+ -- Kouhei Maeda <mkouhei@palmtb.net>  Fri, 17 May 2013 23:15:25 +0900

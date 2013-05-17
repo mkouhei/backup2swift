@@ -49,6 +49,8 @@ def setoption(parser, keyword):
     elif keyword == 'verbose':
         parser.add_argument('-v', '--verbose', action='store_true',
                             help='list verbose')
+        parser.add_argument('-o', '--output', action='store',
+                            help='specify filename of retrieved data')
     elif keyword == 'command':
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-l', '--list', action='store_true',
@@ -57,6 +59,8 @@ def setoption(parser, keyword):
                            help='target file/dir path of backup')
         group.add_argument('-d', '--delete', action='store',
                            help='delete backup data')
+        group.add_argument('-r', '--retrieve', action='store',
+                           help='retrieve backup data')
         parser.set_defaults(func=execute_swift_client)
 
 
@@ -76,6 +80,9 @@ def execute_swift_client(args):
     elif args.path:
         # backup data to swift
         b.backup(args.path)
+    elif args.retrieve:
+        # retrive backup data
+        b.retrieve_backup_data(args.retrieve, args.output)
     elif args.delete:
         # delete backup data
         b.delete_backup_data(args.delete)
