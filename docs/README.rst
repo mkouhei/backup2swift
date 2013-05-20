@@ -39,7 +39,7 @@ Firstly setup configuration file. You may save the file name of your choice as s
   [backup]
   rotate_limit: 10
 
-The "auth_url" is swift authentication url, "username" and "password" are swift's. "rotate_limit" is limitation count of rotation for backup. If this value is 3,  backup is as folloing;
+The "auth_url" is swift authentication url, "username" and "password" are swift's. If you need to ignore verification of SSL certification, append option as "ignore_verify_ssl_certification: True" to [swift] section. "rotate_limit" is limitation count of rotation for backup. If this value is 3,  backup is as folloing;
 
 backup target file name: example.txt
 

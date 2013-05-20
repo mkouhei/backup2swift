@@ -48,4 +48,11 @@ def check_config(filename):
     except (configparser.NoSectionError, configparser.NoOptionError) as error:
         # syslog.ERR is 3
         utils.logging(3, error)
-    return auth_url, username, password, rotate_limit
+    try:
+        if conf.get('swift', 'ignore_verify_ssl_certification') == 'True':
+            verify = False
+        else:
+            verify = True
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        verify = True
+    return auth_url, username, password, rotate_limit, verify
