@@ -1,6 +1,11 @@
 History
 -------
 
+0.3.1 (2012-05-20)
+^^^^^^^^^^^^^^^^^^
+
+* add option to ignore verifing of SSL certificate
+
 0.3 (2012-05-17)
 ^^^^^^^^^^^^^^^^
 

@@ -56,6 +56,7 @@ setup(name='backup2swift',
       classifiers=classifiers,
       packages=find_packages('src'),
       package_dir={'': 'src'},
+      data_files=[('share/backup2swift/examples', ['examples/bu2sw.conf', 'examples/bu2sw_ignore_verify.conf'])],
       install_requires=requires,
       extras_require=dict(
         test=[
