@@ -1,6 +1,11 @@
 History
 -------
 
+0.3.2 (2012-05-24)
+^^^^^^^^^^^^^^^^^^
+
+* fixes fail backup and rotate with verifing default SSL certificate
+
 0.3.1 (2012-05-20)
 ^^^^^^^^^^^^^^^^^^
 
