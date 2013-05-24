@@ -10,8 +10,7 @@ def test_pep8():
     arglist = [['statistics', True],
                ['show-source', True],
                ['repeat', True],
-               ['exclude', ['gen-py', 'GAuth.py',
-                            'ttypes.py', 'constants.py']],
+               ['exclude', []],
                ['paths', [BASE_DIR]]]
 
     pep8style = pep8.StyleGuide(arglist, parse_argv=False, config_file=True)

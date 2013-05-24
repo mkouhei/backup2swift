@@ -20,12 +20,19 @@ import sys
 import os.path
 sys.path.append(os.path.abspath('src'))
 import backup2swift.utils as u
+import test_vars as v
 
 
 class UtilsTests(unittest.TestCase):
 
     def test_get_columns_width(self):
-        pass
+        self.assertListEqual(v.objects_row_width,
+                             u.get_columns_width(v.header_width,
+                                                 v.objects_header,
+                                                 v.objects))
 
-    def test_generate_row_s(self):
-        pass
+    def test_get_columns_width_fail(self):
+        self.assertNotEqual(v.dummy_row_width,
+                            u.get_columns_width(v.header_width,
+                                                v.objects_header,
+                                                v.objects))

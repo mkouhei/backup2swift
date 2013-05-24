@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import syslog
-import sys
-from __init__ import __NAME__
+from __init__ import NAME
 
 
 def logging(priority, message):
@@ -27,7 +26,7 @@ def logging(priority, message):
         priority: syslog priority
         message: log message
     """
-    syslog.openlog(__NAME__, syslog.LOG_PID, syslog.LOG_LOCAL0)
+    syslog.openlog(NAME, syslog.LOG_PID, syslog.LOG_LOCAL0)
     syslog.syslog(priority, str(message))
     syslog.closelog()
     print(message)
