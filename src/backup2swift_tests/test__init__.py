@@ -28,4 +28,4 @@ class InitTests(unittest.TestCase):
         self.assertTrue(i.__version__)
 
     def test__name__(self):
-        self.assertTrue(i.__NAME__)
+        self.assertTrue(i.NAME)
