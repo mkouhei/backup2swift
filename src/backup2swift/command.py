@@ -72,7 +72,7 @@ def execute_swift_client(args):
     """
     (auth_url, username, password,
      rotate_limit, verify) = config.check_config(args.config)
-    b = backup.Backup(auth_url, username, password, verify)
+    b = backup.Backup(auth_url, username, password, verify=verify)
     if args.list:
         # listing backup data
         backup_l = b.retrieve_backup_data_list(args.verbose)
