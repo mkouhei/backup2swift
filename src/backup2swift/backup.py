@@ -198,7 +198,7 @@ class Backup(object):
                                       self.storage_url,
                                       self.container_name,
                                       object_name,
-                                      veirfy=self.verify)
+                                      verify=self.verify)
             if not rc == 204:
                 raise RuntimeError('Failed to delete the object "%s"'
                                    % object_name)
