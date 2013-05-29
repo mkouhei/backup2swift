@@ -26,6 +26,7 @@ test_file = os.path.abspath('src/backup2swift_tests/sample.txt')
 test_files = [os.path.abspath('src/backup2swift_tests/sample.txt'),
               os.path.abspath('src/backup2swift_tests/sample2.txt')]
 object_name = 'sample.txt'
+objects_name = ['sample.txt', 'sample2.txt']
 objects_header = ['bytes', 'content_type', 'hash', 'last_modified', 'name']
 header_width = [5, 12, 4, 13, 4]
 objects_row_width = [5, 12, 32, 26, 12]

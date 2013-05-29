@@ -157,11 +157,16 @@ class Backup(object):
         Argument:
             object_name: delete target object name
         """
-        if (client.is_container(self.token, self.storage_url,
-                                self.container_name, verify=self.verify) and
-            client.is_object(self.token, self.storage_url,
-                             self.container_name, object_name,
-                             verify=self.verify)):
+        if isinstance(object_name, list):
+            # for retrieve multiple objects
+            output_filepath = None
+            for obj in object_name:
+                self.retrieve_backup_data(obj)
+        elif (client.is_container(self.token, self.storage_url,
+                                  self.container_name, verify=self.verify) and
+              client.is_object(self.token, self.storage_url,
+                               self.container_name, object_name,
+                               verify=self.verify)):
             rc, content = client.retrieve_object(self.token,
                                                  self.storage_url,
                                                  self.container_name,

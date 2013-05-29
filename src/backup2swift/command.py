@@ -50,7 +50,8 @@ def setoption(parser, keyword):
         parser.add_argument('-v', '--verbose', action='store_true',
                             help='list verbose')
         parser.add_argument('-o', '--output', action='store',
-                            help='specify filename of retrieved data')
+                            help=('specify filename of retrieved data'
+                                  ' (only retrieving simple object)'))
     elif keyword == 'command':
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-l', '--list', action='store_true',
@@ -59,7 +60,7 @@ def setoption(parser, keyword):
                            help='target file/dir path of backup')
         group.add_argument('-d', '--delete', action='store',
                            help='delete backup data')
-        group.add_argument('-r', '--retrieve', action='store',
+        group.add_argument('-r', '--retrieve', action='store', nargs='+',
                            help='retrieve backup data')
         parser.set_defaults(func=execute_swift_client)
 
