@@ -46,9 +46,6 @@ def setoption(parser, keyword):
         parser.add_argument('-c', '--config', action='store',
                             required=True,
                             help='configuraton file of backup2swift')
-        parser.add_argument('--container', action='store',
-                            help=('specify container name (default: '
-                                  'FQDN of host when executes this command)'))
     elif keyword == 'verbose':
         parser.add_argument('-v', '--verbose', action='store_true',
                             help='list verbose')
@@ -56,6 +53,9 @@ def setoption(parser, keyword):
                             help=('specify filename of retrieved data'
                                   ' (only retrieving simple object)'))
     elif keyword == 'command':
+        parser.add_argument('--container', action='store',
+                            help=('specify container name (default: '
+                                  'FQDN of host when executes this command)'))
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-l', '--list', action='store_true',
                            help='listing object data')
