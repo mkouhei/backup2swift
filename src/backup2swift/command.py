@@ -17,9 +17,13 @@
 """
 import argparse
 import config
+import os
+import os.path
 from __init__ import __version__
 import backup
 import utils
+
+DEFAULT_CONF = '.bu2sw.conf'
 
 
 def parse_options():
@@ -44,24 +48,45 @@ def setoption(parser, keyword):
                             version=__version__)
     elif keyword == 'config':
         parser.add_argument('-c', '--config', action='store',
-                            required=True,
                             help='configuraton file of backup2swift')
     elif keyword == 'verbose':
         parser.add_argument('-v', '--verbose', action='store_true',
                             help='list verbose')
         parser.add_argument('-o', '--output', action='store',
-                            help='specify filename of retrieved data')
+                            help=('specify filename of retrieved data'
+                                  ' (only retrieving simple object)'))
     elif keyword == 'command':
+        parser.add_argument('--container', action='store',
+                            help=('specify container name (default: '
+                                  'FQDN of host when executes this command)'))
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-l', '--list', action='store_true',
                            help='listing object data')
-        group.add_argument('-p', '--path', action='store',
-                           help='target file/dir path of backup')
+        group.add_argument('-p', '--path', action='store', nargs='+',
+                           help='target files/dir path of backup')
         group.add_argument('-d', '--delete', action='store',
                            help='delete backup data')
-        group.add_argument('-r', '--retrieve', action='store',
+        group.add_argument('-r', '--retrieve', action='store', nargs='+',
                            help='retrieve backup data')
         parser.set_defaults(func=execute_swift_client)
+
+
+def check_config_file(args_config):
+    """
+
+    Argument:
+        args_config: args.config
+    """
+    if args_config:
+        # override configuration file path
+        config_file = args_config
+    elif os.path.isfile(os.path.join(os.environ['HOME'], DEFAULT_CONF)):
+        # use default configuration file
+        config_file = os.path.join(os.environ['HOME'], DEFAULT_CONF)
+    else:
+        raise IOError(('Setup "~/.bu2sw.conf" or '
+                       'specify configuration file with "-c" option'))
+    return config_file
 
 
 def execute_swift_client(args):
@@ -70,9 +95,15 @@ def execute_swift_client(args):
     Argument:
         args: argument object
     """
+    config_file = check_config_file(args.config)
     (auth_url, username, password,
-     rotate_limit, verify) = config.check_config(args.config)
-    b = backup.Backup(auth_url, username, password, verify=verify)
+     rotate_limit, verify) = config.check_config(config_file)
+    if args.container:
+        container_name = args.container
+    else:
+        container_name = utils.FQDN
+    b = backup.Backup(auth_url, username, password,
+                      verify=verify, container_name=container_name)
     if args.list:
         # listing backup data
         backup_l = b.retrieve_backup_data_list(args.verbose)
@@ -92,7 +123,7 @@ def main():
     try:
         args = parse_options()
         args.func(args)
-    except RuntimeError as error:
+    except (RuntimeError, IOError) as error:
         # syslog.ERR is 3
         utils.logging(3, error)
 

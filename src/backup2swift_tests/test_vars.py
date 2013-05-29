@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
+
 auth_url = 'https://example.org/auth/v1.0'
 username = 'username'
 password = 'password'
@@ -23,8 +24,12 @@ objects = [{u'bytes': 5246,
             u'name': u'sample_3.txt'}]
 objects_name_l = [i.get('name') for i in objects]
 test_file = os.path.abspath('src/backup2swift_tests/sample.txt')
+test_files = [os.path.abspath('src/backup2swift_tests/sample.txt'),
+              os.path.abspath('src/backup2swift_tests/sample2.txt')]
 object_name = 'sample.txt'
+objects_name = ['sample.txt', 'sample2.txt']
 objects_header = ['bytes', 'content_type', 'hash', 'last_modified', 'name']
 header_width = [5, 12, 4, 13, 4]
 objects_row_width = [5, 12, 32, 26, 12]
 dummy_row_width = [5, 12, 32, 26, 11]
+config_file = 'examples/bu2sw.conf'

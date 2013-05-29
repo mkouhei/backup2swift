@@ -15,5 +15,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.4'
-NAME = 'bu2sw'
+import unittest
+import sys
+import os.path
+sys.path.append(os.path.abspath('src'))
+import backup2swift.command as c
+import backup2swift_tests.test_vars as v
+
+
+class CommandTests(unittest.TestCase):
+
+    def test_check_config_file(self):
+        self.assertEqual(v.config_file,
+                         c.check_config_file(v.config_file))
+
+    def test_check_config_file_fail(self):
+        self.assertRaises(IOError, c.check_config_file, None)

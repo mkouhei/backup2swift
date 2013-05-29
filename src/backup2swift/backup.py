@@ -16,14 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from swiftsc import client
-import socket
 import os.path
 import glob
 from datetime import datetime
-
+from utils import FQDN
 
 ROTATE_LIMIT = 10
-FQDN = socket.getfqdn()
 
 
 class Backup(object):
@@ -43,8 +41,13 @@ class Backup(object):
         Argument:
             target_path: path of backup target file or directory
         """
-        if os.path.isdir(target_path):
-            [self.backup_file(f) for f in glob.glob(target_path + '/*')]
+        if isinstance(target_path, list):
+            # for multiple arguments
+            for path in target_path:
+                self.backup(path)
+        elif os.path.isdir(target_path):
+            [self.backup_file(f)
+             for f in glob.glob(os.path.join(target_path, '*'))]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
         return True
@@ -153,11 +156,16 @@ class Backup(object):
         Argument:
             object_name: delete target object name
         """
-        if (client.is_container(self.token, self.storage_url,
-                                self.container_name, verify=self.verify) and
-            client.is_object(self.token, self.storage_url,
-                             self.container_name, object_name,
-                             verify=self.verify)):
+        if isinstance(object_name, list):
+            # for retrieve multiple objects
+            output_filepath = None
+            for obj in object_name:
+                self.retrieve_backup_data(obj)
+        elif (client.is_container(self.token, self.storage_url,
+                                  self.container_name, verify=self.verify) and
+              client.is_object(self.token, self.storage_url,
+                               self.container_name, object_name,
+                               verify=self.verify)):
             rc, content = client.retrieve_object(self.token,
                                                  self.storage_url,
                                                  self.container_name,
@@ -194,7 +202,7 @@ class Backup(object):
                                       self.storage_url,
                                       self.container_name,
                                       object_name,
-                                      veirfy=self.verify)
+                                      verify=self.verify)
             if not rc == 204:
                 raise RuntimeError('Failed to delete the object "%s"'
                                    % object_name)
