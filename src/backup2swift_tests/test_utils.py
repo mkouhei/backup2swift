@@ -36,3 +36,6 @@ class UtilsTests(unittest.TestCase):
                             u.get_columns_width(v.header_width,
                                                 v.objects_header,
                                                 v.objects))
+
+    def test_FQDN(self):
+        self.assertTrue(isinstance(u.FQDN, str))

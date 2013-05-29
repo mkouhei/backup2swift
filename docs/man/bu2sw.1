@@ -46,23 +46,28 @@ Show program's version number.
 .B \-c CONFIG, \-\-config CONFIG
 Specify configuration file
 .TP
+.B \-\-container CONTAINER
+Specify container name
+(default: FQDN of host when executes this command)
+.TP
 .B \-l, \-\-list
 Listing object data
 .TP
-.B \-p PATH, \-\-path PATH
-Backup target file/directory path
+.B \-v, \-\-verbose
+list verbose
 .TP
-.B \-r RETRIEVE, \-\-retrieve RETRIEVE
+.B \-p PATH [PATH ...], \-\-path PATH [PATH ...]
+Backup target files/directory path
+.TP
+.B \-r RETRIEVE [RETRIEVE ...], \-\-retrieve RETRIEVE [RETRIEVE ...]
 Retrieve backup data
 .TP
 .B \-o OUTPUT, \-\-output OUTPUT
 Specify file path of retrieved object
+(only retrieving simple object)
 .TP
 .B \-d DELETE, \-\-delete DELETE
 Delete backup data
-.TP
-.B \-v, \-\-verbose
-list verbose
 .TP
 .SH SEE ALSO
 .br

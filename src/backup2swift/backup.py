@@ -16,14 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from swiftsc import client
-import socket
 import os.path
 import glob
 from datetime import datetime
-
+from utils import FQDN
 
 ROTATE_LIMIT = 10
-FQDN = socket.getfqdn()
 
 
 class Backup(object):
@@ -48,7 +46,8 @@ class Backup(object):
             for path in target_path:
                 self.backup(path)
         elif os.path.isdir(target_path):
-            [self.backup_file(f) for f in glob.glob(target_path + '/*')]
+            [self.backup_file(f)
+             for f in glob.glob(os.path.join(target_path, '*'))]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
         return True

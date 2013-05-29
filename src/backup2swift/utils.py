@@ -16,7 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import syslog
+import socket
 from __init__ import NAME
+
+FQDN = socket.getfqdn()
 
 
 def logging(priority, message):

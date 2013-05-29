@@ -46,6 +46,9 @@ def setoption(parser, keyword):
         parser.add_argument('-c', '--config', action='store',
                             required=True,
                             help='configuraton file of backup2swift')
+        parser.add_argument('--container', action='store',
+                            help=('specify container name (default: '
+                                  'FQDN of host when executes this command)'))
     elif keyword == 'verbose':
         parser.add_argument('-v', '--verbose', action='store_true',
                             help='list verbose')
@@ -57,7 +60,7 @@ def setoption(parser, keyword):
         group.add_argument('-l', '--list', action='store_true',
                            help='listing object data')
         group.add_argument('-p', '--path', action='store', nargs='+',
-                           help='target file/dir path of backup')
+                           help='target files/dir path of backup')
         group.add_argument('-d', '--delete', action='store',
                            help='delete backup data')
         group.add_argument('-r', '--retrieve', action='store', nargs='+',
@@ -73,7 +76,12 @@ def execute_swift_client(args):
     """
     (auth_url, username, password,
      rotate_limit, verify) = config.check_config(args.config)
-    b = backup.Backup(auth_url, username, password, verify=verify)
+    if args.container:
+        container_name = args.container
+    else:
+        container_name = utils.FQDN
+    b = backup.Backup(auth_url, username, password,
+                      verify=verify, container_name=container_name)
     if args.list:
         # listing backup data
         backup_l = b.retrieve_backup_data_list(args.verbose)
