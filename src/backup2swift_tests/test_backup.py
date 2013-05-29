@@ -37,6 +37,12 @@ class BackupTests(unittest.TestCase):
     def test_backup(self, m1, m2, m3):
         self.assertEqual(self.b.backup("."), True)
 
+    @patch('swiftsc.client.is_container', return_value=False)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=201)
+    def test_backup_multiple_files(self, m1, m2, m3):
+        self.assertEqual(self.b.backup(v.test_files), True)
+
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.objects)

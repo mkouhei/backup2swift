@@ -55,7 +55,7 @@ def setoption(parser, keyword):
         group = parser.add_mutually_exclusive_group(required=True)
         group.add_argument('-l', '--list', action='store_true',
                            help='listing object data')
-        group.add_argument('-p', '--path', action='store',
+        group.add_argument('-p', '--path', action='store', nargs='+',
                            help='target file/dir path of backup')
         group.add_argument('-d', '--delete', action='store',
                            help='delete backup data')

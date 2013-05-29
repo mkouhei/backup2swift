@@ -23,6 +23,8 @@ objects = [{u'bytes': 5246,
             u'name': u'sample_3.txt'}]
 objects_name_l = [i.get('name') for i in objects]
 test_file = os.path.abspath('src/backup2swift_tests/sample.txt')
+test_files = [os.path.abspath('src/backup2swift_tests/sample.txt'),
+              os.path.abspath('src/backup2swift_tests/sample2.txt')]
 object_name = 'sample.txt'
 objects_header = ['bytes', 'content_type', 'hash', 'last_modified', 'name']
 header_width = [5, 12, 4, 13, 4]
