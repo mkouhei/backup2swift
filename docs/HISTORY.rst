@@ -1,6 +1,21 @@
 History
 -------
 
+0.4 (2012-05-29)
+^^^^^^^^^^^^^^^^
+
+* New features
+
+  * support default config file 
+  * specify any container
+  * support to retrieve multiple objects
+  * specify multiple upload files
+
+* Bug fix
+
+  * fixes spelling error
+  * remove pychecker for travis
+
 0.3.2 (2012-05-24)
 ^^^^^^^^^^^^^^^^^^
 
