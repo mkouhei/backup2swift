@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
+
 auth_url = 'https://example.org/auth/v1.0'
 username = 'username'
 password = 'password'
@@ -31,3 +32,4 @@ objects_header = ['bytes', 'content_type', 'hash', 'last_modified', 'name']
 header_width = [5, 12, 4, 13, 4]
 objects_row_width = [5, 12, 32, 26, 12]
 dummy_row_width = [5, 12, 32, 26, 11]
+config_file = 'examples/bu2sw.conf'
