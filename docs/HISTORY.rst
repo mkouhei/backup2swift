@@ -1,6 +1,20 @@
 History
 -------
 
+0.5 (2012-05-30)
+^^^^^^^^^^^^^^^^
+
+* New features
+
+  * upload / retrieve / delete in parallel
+  * support to delete multiple objects
+
+* Bug fix
+
+  * fixes fail to raise IOError if default config file exists
+  * fail to use "rotate_limit" option on configuration file
+  * support pep8 less than version 1.3
+
 0.4 (2012-05-29)
 ^^^^^^^^^^^^^^^^
 
