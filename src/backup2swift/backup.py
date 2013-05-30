@@ -19,20 +19,24 @@ from swiftsc import client
 import os.path
 import glob
 from datetime import datetime
-from utils import FQDN
+import utils
 
 ROTATE_LIMIT = 10
 
 
 class Backup(object):
-    def __init__(self, auth_url, username, password,
-                 verify=True, container_name=FQDN):
+    def __init__(self, auth_url, username, password, rotate_limit=ROTATE_LIMIT,
+                 verify=True, container_name=utils.FQDN):
         self.verify = verify
         (self.token,
          self.storage_url) = client.retrieve_token(auth_url,
                                                    username,
                                                    password,
                                                    verify=self.verify)
+        if isinstance(rotate_limit, str):
+            self.rotate_limit = int(rotate_limit)
+        else:
+            self.rotate_limit = rotate_limit
         self.container_name = container_name
 
     def backup(self, target_path):
@@ -91,15 +95,13 @@ class Backup(object):
                                    % object_name)
         return True
 
-    def rotate(self, filename, object_name, objects_list,
-               rotate_limit=ROTATE_LIMIT):
+    def rotate(self, filename, object_name, objects_list):
         """
 
         Arguments:
             filename:     filename of backup target
             object_name:  name of object on Swift
             objects_list: list of objects on Swift
-            rotate_limit: limitation of backup rotation
         """
         # copy current object to new object
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -124,7 +126,8 @@ class Backup(object):
         archive_list.reverse()
         [client.delete_object(self.token, self.storage_url,
                               self.container_name, obj, verify=self.verify)
-         for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
+         for i, obj in enumerate(archive_list)
+         if i + 1 > self.rotate_limit - 1]
         return True
 
     def retrieve_backup_data_list(self, verbose=False):

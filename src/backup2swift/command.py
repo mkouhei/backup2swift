@@ -102,7 +102,7 @@ def execute_swift_client(args):
         container_name = args.container
     else:
         container_name = utils.FQDN
-    b = backup.Backup(auth_url, username, password,
+    b = backup.Backup(auth_url, username, password, rotate_limit,
                       verify=verify, container_name=container_name)
     if args.list:
         # listing backup data
