@@ -47,10 +47,9 @@ class Backup(object):
         """
         if isinstance(target_path, list):
             # for multiple arguments
-            for path in target_path:
-                self.backup(path)
+            [utils.multiprocess(self.backup, path) for path in target_path]
         elif os.path.isdir(target_path):
-            [self.backup_file(f)
+            [utils.multiprocess(self.backup_file, f)
              for f in glob.glob(os.path.join(target_path, '*'))]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
@@ -124,8 +123,9 @@ class Backup(object):
         archive_list = [obj for obj in objects_list
                         if obj.startswith(object_name + '_')]
         archive_list.reverse()
-        [client.delete_object(self.token, self.storage_url,
-                              self.container_name, obj, verify=self.verify)
+        [utils.multiprocess(client.delete_object, self.token,
+                            self.storage_url, self.container_name,
+                            obj, verify=self.verify)
          for i, obj in enumerate(archive_list)
          if i + 1 > self.rotate_limit - 1]
         return True
@@ -162,8 +162,8 @@ class Backup(object):
         if isinstance(object_name, list):
             # for retrieve multiple objects
             output_filepath = None
-            for obj in object_name:
-                self.retrieve_backup_data(obj)
+            [utils.multiprocess(self.retrieve_backup_data, obj)
+             for obj in object_name]
         elif (client.is_container(self.token, self.storage_url,
                                   self.container_name, verify=self.verify) and
               client.is_object(self.token, self.storage_url,
