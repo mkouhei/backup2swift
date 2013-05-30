@@ -196,11 +196,15 @@ class Backup(object):
         Argument:
             object_name: delete target object name
         """
-        if (client.is_container(self.token, self.storage_url,
-                                self.container_name, verify=self.verify) and
-            client.is_object(self.token, self.storage_url,
-                             self.container_name, object_name,
-                             verify=self.verify)):
+        if isinstance(object_name, list):
+            # for multiple arguments
+            [self.delete_backup_data(obj) for obj in object_name]
+
+        elif (client.is_container(self.token, self.storage_url,
+                                  self.container_name, verify=self.verify) and
+              client.is_object(self.token, self.storage_url,
+                               self.container_name, object_name,
+                               verify=self.verify)):
             rc = client.delete_object(self.token,
                                       self.storage_url,
                                       self.container_name,
