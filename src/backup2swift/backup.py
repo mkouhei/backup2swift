@@ -19,20 +19,24 @@ from swiftsc import client
 import os.path
 import glob
 from datetime import datetime
-from utils import FQDN
+import utils
 
 ROTATE_LIMIT = 10
 
 
 class Backup(object):
-    def __init__(self, auth_url, username, password,
-                 verify=True, container_name=FQDN):
+    def __init__(self, auth_url, username, password, rotate_limit=ROTATE_LIMIT,
+                 verify=True, container_name=utils.FQDN):
         self.verify = verify
         (self.token,
          self.storage_url) = client.retrieve_token(auth_url,
                                                    username,
                                                    password,
                                                    verify=self.verify)
+        if isinstance(rotate_limit, str):
+            self.rotate_limit = int(rotate_limit)
+        else:
+            self.rotate_limit = rotate_limit
         self.container_name = container_name
 
     def backup(self, target_path):
@@ -43,10 +47,9 @@ class Backup(object):
         """
         if isinstance(target_path, list):
             # for multiple arguments
-            for path in target_path:
-                self.backup(path)
+            [utils.multiprocess(self.backup, path) for path in target_path]
         elif os.path.isdir(target_path):
-            [self.backup_file(f)
+            [utils.multiprocess(self.backup_file, f)
              for f in glob.glob(os.path.join(target_path, '*'))]
         elif os.path.isfile(target_path):
             self.backup_file(target_path)
@@ -91,15 +94,13 @@ class Backup(object):
                                    % object_name)
         return True
 
-    def rotate(self, filename, object_name, objects_list,
-               rotate_limit=ROTATE_LIMIT):
+    def rotate(self, filename, object_name, objects_list):
         """
 
         Arguments:
             filename:     filename of backup target
             object_name:  name of object on Swift
             objects_list: list of objects on Swift
-            rotate_limit: limitation of backup rotation
         """
         # copy current object to new object
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -122,9 +123,11 @@ class Backup(object):
         archive_list = [obj for obj in objects_list
                         if obj.startswith(object_name + '_')]
         archive_list.reverse()
-        [client.delete_object(self.token, self.storage_url,
-                              self.container_name, obj, verify=self.verify)
-         for i, obj in enumerate(archive_list) if i + 1 > rotate_limit - 1]
+        [utils.multiprocess(client.delete_object, self.token,
+                            self.storage_url, self.container_name,
+                            obj, verify=self.verify)
+         for i, obj in enumerate(archive_list)
+         if i + 1 > self.rotate_limit - 1]
         return True
 
     def retrieve_backup_data_list(self, verbose=False):
@@ -159,8 +162,8 @@ class Backup(object):
         if isinstance(object_name, list):
             # for retrieve multiple objects
             output_filepath = None
-            for obj in object_name:
-                self.retrieve_backup_data(obj)
+            [utils.multiprocess(self.retrieve_backup_data, obj)
+             for obj in object_name]
         elif (client.is_container(self.token, self.storage_url,
                                   self.container_name, verify=self.verify) and
               client.is_object(self.token, self.storage_url,
@@ -193,11 +196,15 @@ class Backup(object):
         Argument:
             object_name: delete target object name
         """
-        if (client.is_container(self.token, self.storage_url,
-                                self.container_name, verify=self.verify) and
-            client.is_object(self.token, self.storage_url,
-                             self.container_name, object_name,
-                             verify=self.verify)):
+        if isinstance(object_name, list):
+            # for multiple arguments
+            [self.delete_backup_data(obj) for obj in object_name]
+
+        elif (client.is_container(self.token, self.storage_url,
+                                  self.container_name, verify=self.verify) and
+              client.is_object(self.token, self.storage_url,
+                               self.container_name, object_name,
+                               verify=self.verify)):
             rc = client.delete_object(self.token,
                                       self.storage_url,
                                       self.container_name,

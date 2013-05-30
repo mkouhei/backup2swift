@@ -135,7 +135,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.delete_object', return_value=204)
     def test_delete_backup_multiple_data(self, m1, m2, m3):
-        self.assertEqual(self.b.delete_backup_data(v.objects_name), True)
+        self.assertEqual(self.b.delete_backup_data(v.objects_name), None)
 
     @patch('swiftsc.client.is_container', return_value=False)
     def test_delete_backup_data_without_container(self, m):

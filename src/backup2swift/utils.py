@@ -17,6 +17,7 @@
 """
 import syslog
 import socket
+import multiprocessing
 from __init__ import NAME
 
 FQDN = socket.getfqdn()
@@ -142,3 +143,8 @@ def generate_row_s(row, columns_width, header=None):
                       (columns_width[i] - len(column) + 1))
         row_s += '|'
     return row_s
+
+
+def multiprocess(func, *args, **kwargs):
+    proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+    proc.start()

@@ -64,7 +64,7 @@ def setoption(parser, keyword):
                            help='listing object data')
         group.add_argument('-p', '--path', action='store', nargs='+',
                            help='target files/dir path of backup')
-        group.add_argument('-d', '--delete', action='store',
+        group.add_argument('-d', '--delete', action='store', nargs='+',
                            help='delete backup data')
         group.add_argument('-r', '--retrieve', action='store', nargs='+',
                            help='retrieve backup data')
@@ -102,7 +102,7 @@ def execute_swift_client(args):
         container_name = args.container
     else:
         container_name = utils.FQDN
-    b = backup.Backup(auth_url, username, password,
+    b = backup.Backup(auth_url, username, password, rotate_limit,
                       verify=verify, container_name=container_name)
     if args.list:
         # listing backup data
