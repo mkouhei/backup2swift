@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
 Build-Depends: debhelper (>= 8.0.0), python-all, python-setuptools, python-pytest, pep8, python-mock, python-swiftsc, python-argparse
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 X-Python-Version: >= 2.6
 Homepage: https://github.com/mkouhei/backup2swift
 
