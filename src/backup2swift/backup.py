@@ -26,12 +26,13 @@ ROTATE_LIMIT = 10
 
 class Backup(object):
     def __init__(self, auth_url, username, password, rotate_limit=ROTATE_LIMIT,
-                 verify=True, container_name=utils.FQDN):
+                 verify=True, tenant_id=None, container_name=utils.FQDN):
         self.verify = verify
         (self.token,
          self.storage_url) = client.retrieve_token(auth_url,
                                                    username,
                                                    password,
+                                                   tenant_id,
                                                    verify=self.verify)
         if isinstance(rotate_limit, str):
             self.rotate_limit = int(rotate_limit)

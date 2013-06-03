@@ -99,9 +99,9 @@ def print_header(columns_width, header):
         columns_width: list of columns string length
         header:        list of header data
     """
-    border = '+'
+    border = ''
     for col_width in columns_width:
-        border += "-" * (col_width + 1) + '-+'
+        border += "-" * col_width + '-'
 
     print("%s" % border)
     print(generate_row_s(header, columns_width))
@@ -114,9 +114,9 @@ def print_footer(columns_width):
     Argument:
         columns_width: list of columns string length
     """
-    border = '+'
+    border = ''
     for i, col_width in enumerate(columns_width):
-        border += "-" * (col_width + 1) + '-+'
+        border += "-" * col_width + '-'
     print("%s" % border)
 
 
@@ -133,15 +133,15 @@ def generate_row_s(row, columns_width, header=None):
     if header:
         for i, key in enumerate(header):
             column = str(row.get(key))
-            row_s += ('| ' + column + ' ' *
+            row_s += (column + ' ' *
                       (columns_width[i] - len(column) + 1))
-        row_s += '|'
+        row_s += ' '
     else:
         for i, value in enumerate(row):
             column = str(value)
-            row_s += ('| ' + column + ' ' *
+            row_s += (column + ' ' *
                       (columns_width[i] - len(column) + 1))
-        row_s += '|'
+        row_s += ' '
     return row_s
 
 
