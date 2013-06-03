@@ -55,4 +55,12 @@ def check_config(filename):
             verify = True
     except (configparser.NoSectionError, configparser.NoOptionError):
         verify = True
-    return auth_url, username, password, rotate_limit, verify
+    try:
+        if conf.get('keystone', 'tenant_id'):
+            tenant_id = conf.get('keystone', 'tenant_id')
+        else:
+            tenant_id = None
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        tenant_id = None
+
+    return auth_url, username, password, rotate_limit, verify, tenant_id

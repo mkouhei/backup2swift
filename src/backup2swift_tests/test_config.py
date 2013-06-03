@@ -29,7 +29,8 @@ class ConfigTests(unittest.TestCase):
                          'username',
                          'password',
                          '10',
-                          True),
+                          True,
+                          None),
                          c.check_config('examples/bu2sw.conf'))
 
     def test_check_config_ignore(self):
@@ -37,5 +38,6 @@ class ConfigTests(unittest.TestCase):
                          'username',
                          'password',
                          '10',
-                          False),
+                          False,
+                          None),
                          c.check_config('examples/bu2sw_ignore_verify.conf'))
