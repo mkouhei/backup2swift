@@ -19,8 +19,8 @@ import sys
 if sys.version_info > (2, 6) and sys.version_info < (2, 8):
     import ConfigParser as configparser
 elif sys.version_info > (3, 0):
-    import configpaser
-import utils
+    import configparser
+from backup2swift import utils
 
 
 def check_config(filename):

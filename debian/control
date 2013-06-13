@@ -2,9 +2,9 @@ Source: backup2swift
 Section: python
 Priority: optional
 Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
-Build-Depends: debhelper (>= 8.0.0), python-all, python-setuptools, python-pytest, pep8, python-mock, python-swiftsc, python-argparse
+Build-Depends: debhelper (>= 8.0.0), python-all, python-setuptools, python-pytest, pep8, python-mock, python-swiftsc, python-argparse, python3-all, python3-setuptools, python3-pytest, python3-mock, python3-swiftsc
 Standards-Version: 3.9.4
-X-Python-Version: >= 2.6
+X-Python-Version: >= 2.6, >= 3.2
 Homepage: https://github.com/mkouhei/backup2swift
 
 Package: python-backup2swift
@@ -15,3 +15,11 @@ Description: backup data to OpenStack Swift
  This tool is that backup data to OpenStack Swift. provides features are
  command line interface, and backup rotatition. This is depend on swiftsc,
  that is simple client library of OpenStack Swift.
+
+Package: python3-backup2swift
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, python3-swiftsc
+Description: backup data to OpenStack Swift for python3
+ This tool is that backup data to OpenStack Swift for python3. provides
+ features are command line interface, and backup rotatition. This is
+ depend on swiftsc, that is simple client library of OpenStack Swift.

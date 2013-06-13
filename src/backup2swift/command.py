@@ -16,12 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import argparse
-import config
 import os
 import os.path
-from __init__ import __version__
-import backup
-import utils
+from backup2swift import __version__, backup, utils, config
 
 DEFAULT_CONF = '.bu2sw.conf'
 

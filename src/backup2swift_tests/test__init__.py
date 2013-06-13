@@ -19,13 +19,13 @@ import unittest
 import sys
 import os.path
 sys.path.append(os.path.abspath('src'))
-import backup2swift.__init__ as i
+import backup2swift as b
 
 
 class InitTests(unittest.TestCase):
 
     def test__version__(self):
-        self.assertTrue(i.__version__)
+        self.assertTrue(b.__version__)
 
     def test__name__(self):
-        self.assertTrue(i.NAME)
+        self.assertTrue(b.__name__)

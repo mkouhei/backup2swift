@@ -15,11 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from swiftsc import client
 import os.path
 import glob
+import sys
 from datetime import datetime
-import utils
+from swiftsc import client
+from backup2swift import utils
 
 ROTATE_LIMIT = 10
 
@@ -186,7 +187,11 @@ class Backup(object):
             else:
                 dpath = os.path.abspath(os.curdir)
                 fpath = os.path.join(dpath, object_name)
-            with open(fpath, 'w') as f:
+            if sys.version_info > (3, 0) and isinstance(content, bytes):
+                mode = 'bw'
+            else:
+                mode = 'w'
+            with open(fpath, mode) as f:
                 f.write(content)
         else:
             raise RuntimeError('No such object "%s"' % object_name)

@@ -16,9 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import syslog
-import socket
 import multiprocessing
-from __init__ import NAME
+import sys
+import socket
+import backup2swift
 
 FQDN = socket.getfqdn()
 
@@ -30,7 +31,7 @@ def logging(priority, message):
         priority: syslog priority
         message: log message
     """
-    syslog.openlog(NAME, syslog.LOG_PID, syslog.LOG_LOCAL0)
+    syslog.openlog(backup2swift.__name__, syslog.LOG_PID, syslog.LOG_LOCAL0)
     syslog.syslog(priority, str(message))
     syslog.closelog()
     print(message)
@@ -44,11 +45,18 @@ def list_data(data):
         data: list of data
     """
     for i in data:
-        if isinstance(i, unicode):
-            print(i)
-        elif isinstance(i, dict):
-            pretty_print(i.keys(), data)
-            break
+        if sys.version_info < (3, 0):
+            if isinstance(i, unicode):
+                print(i)
+            elif isinstance(i, dict):
+                pretty_print(list(i.keys()), data)
+                break
+        else:
+            if isinstance(i, str):
+                print(i)
+            elif isinstance(i, dict):
+                pretty_print(list(i.keys()), data)
+                break
 
 
 def pretty_print(header, rows):
@@ -70,7 +78,7 @@ def pretty_print(header, rows):
     # print formatly
     print_header(col_width_l, header)
     for row in rows:
-        print generate_row_s(row, col_width_l, header)
+        print(generate_row_s(row, col_width_l, header))
     print_footer(col_width_l)
 
 
