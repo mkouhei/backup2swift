@@ -20,7 +20,7 @@ import sys
 import os.path
 sys.path.append(os.path.abspath('src'))
 import backup2swift.utils as u
-import test_vars as v
+import backup2swift_tests.test_vars as v
 
 
 class UtilsTests(unittest.TestCase):
