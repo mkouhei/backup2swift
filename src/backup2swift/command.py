@@ -53,7 +53,7 @@ def setoption(parser, keyword):
                             help=('specify filename of retrieved data'
                                   ' (only retrieving simple object)'))
     elif keyword == 'command':
-        parser.add_argument('--container', action='store',
+        parser.add_argument('-C', '--container', action='store',
                             help=('specify container name (default: '
                                   'FQDN of host when executes this command)'))
         group = parser.add_mutually_exclusive_group(required=True)
