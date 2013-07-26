@@ -83,6 +83,7 @@ class Backup(object):
                                             verify=self.verify)]
 
         if filename and data:
+            # from stdin pipe
             object_name = filename
             filename = data
 

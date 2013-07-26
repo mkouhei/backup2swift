@@ -63,7 +63,7 @@ def setoption(parser, keyword):
         group.add_argument('-p', '--path', action='store', nargs='+',
                            help='target files/dir path of backup')
         group.add_argument('-s', '--stdin', action='store',
-                           help='backup via pipe and specify object name')
+                           help='backup fromstdin pipe & specify object name')
         group.add_argument('-d', '--delete', action='store', nargs='+',
                            help='delete backup data')
         group.add_argument('-r', '--retrieve', action='store', nargs='+',
@@ -113,7 +113,13 @@ def execute_swift_client(args):
         # backup data to swift
         b.backup(args.path)
     elif args.stdin:
-        b.backup_file(args.stdin, data=sys.stdin)
+        # backup via stdin pipe
+        if sys.version_info > (3, 0):
+            # for python3
+            b.backup_file(args.stdin, data=sys.stdin.buffer.raw)
+        else:
+            # for python2
+            b.backup_file(args.stdin, data=sys.stdin)
     elif args.retrieve:
         # retrive backup data
         b.retrieve_backup_data(args.retrieve, args.output)
