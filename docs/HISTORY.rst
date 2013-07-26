@@ -1,6 +1,12 @@
 History
 -------
 
+0.8 (2013-07-27)
+^^^^^^^^^^^^^^^^
+
+* read the file from stdin pipe
+* Omitted option of --container
+
 0.7 (2013-06-14)
 ^^^^^^^^^^^^^^^^
 
