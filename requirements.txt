@@ -2,3 +2,4 @@ pep8>=1.4.5
 mock>=0.8.0
 swiftsc>=0.5
 pytest
+python-magic
