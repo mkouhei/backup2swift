@@ -72,6 +72,16 @@ class BackupTests(unittest.TestCase):
         self.assertEqual(self.b.backup_file("examples/bu2sw.conf"), True)
 
     @patch('swiftsc.client.is_container', return_value=True)
+    @patch('swiftsc.client.create_container', return_value=202)
+    @patch('swiftsc.client.list_objects', return_value=v.objects)
+    @patch('swiftsc.client.create_object', return_value=201)
+    def test_backup_file_create_object_via_stdin(self, m1, m2, m3, m4):
+        test_data = open("examples/bu2sw.conf", 'rb', buffering=0)
+        self.assertEqual(self.b.backup_file("bu2sw.conf",
+                                            test_data), True)
+        test_data.close()
+
+    @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.objects)
     @patch('swiftsc.client.create_object', return_value=202)

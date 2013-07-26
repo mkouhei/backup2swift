@@ -62,6 +62,7 @@ class Backup(object):
 
         Argument:
             filename: path of backup target file
+            data:     backup target file content from stdin pipe
         """
         object_name = os.path.basename(filename)
         if not client.is_container(self.token, self.storage_url,
