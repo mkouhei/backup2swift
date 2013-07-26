@@ -18,6 +18,7 @@
 import argparse
 import os
 import os.path
+import sys
 from backup2swift import __version__, backup, utils, config
 
 DEFAULT_CONF = '.bu2sw.conf'
@@ -53,7 +54,7 @@ def setoption(parser, keyword):
                             help=('specify filename of retrieved data'
                                   ' (only retrieving simple object)'))
     elif keyword == 'command':
-        parser.add_argument('--container', action='store',
+        parser.add_argument('-C', '--container', action='store',
                             help=('specify container name (default: '
                                   'FQDN of host when executes this command)'))
         group = parser.add_mutually_exclusive_group(required=True)
@@ -61,6 +62,8 @@ def setoption(parser, keyword):
                            help='listing object data')
         group.add_argument('-p', '--path', action='store', nargs='+',
                            help='target files/dir path of backup')
+        group.add_argument('-s', '--stdin', action='store',
+                           help='backup fromstdin pipe & specify object name')
         group.add_argument('-d', '--delete', action='store', nargs='+',
                            help='delete backup data')
         group.add_argument('-r', '--retrieve', action='store', nargs='+',
@@ -109,6 +112,14 @@ def execute_swift_client(args):
     elif args.path:
         # backup data to swift
         b.backup(args.path)
+    elif args.stdin:
+        # backup via stdin pipe
+        if sys.version_info > (3, 0):
+            # for python3
+            b.backup_file(args.stdin, data=sys.stdin.buffer.raw)
+        else:
+            # for python2
+            b.backup_file(args.stdin, data=sys.stdin)
     elif args.retrieve:
         # retrive backup data
         b.retrieve_backup_data(args.retrieve, args.output)

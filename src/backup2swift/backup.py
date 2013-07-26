@@ -57,14 +57,14 @@ class Backup(object):
             self.backup_file(target_path)
         return True
 
-    def backup_file(self, filename):
+    def backup_file(self, filename, data=None):
         """
 
         Argument:
             filename: path of backup target file
+            data:     backup target file content from stdin pipe
         """
         object_name = os.path.basename(filename)
-
         if not client.is_container(self.token, self.storage_url,
                                    self.container_name, verify=self.verify):
             # False is no container
@@ -83,6 +83,11 @@ class Backup(object):
                                             self.container_name,
                                             verify=self.verify)]
 
+        if filename and data:
+            # from stdin pipe
+            object_name = filename
+            filename = data
+
         if object_name in objects_list:
             self.rotate(filename, object_name, objects_list)
         else:
@@ -90,6 +95,7 @@ class Backup(object):
                                       self.storage_url,
                                       self.container_name,
                                       filename,
+                                      object_name=object_name,
                                       verify=self.verify)
             if not (rc == 201 or rc == 202):
                 raise RuntimeError('Failed to create the object "%s"'
@@ -116,6 +122,7 @@ class Backup(object):
         # create new object
         rc = client.create_object(self.token, self.storage_url,
                                   self.container_name, filename,
+                                  object_name=object_name,
                                   verify=self.verify)
         if rc != 201:
             raise RuntimeError('Failed to create the object "%s"'
