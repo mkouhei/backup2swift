@@ -1,6 +1,18 @@
 History
 -------
 
+0.8.1 (2014-01-10)
+^^^^^^^^^^^^^^^^^^
+
+* Append Python 3 classifier to setup.py
+* Refine description.
+    
+  * Thanks, Thomas Goirand.
+
+* Bug fix
+
+  * ImportError: No module named magic in travis-ci
+
 0.8 (2013-07-27)
 ^^^^^^^^^^^^^^^^
 

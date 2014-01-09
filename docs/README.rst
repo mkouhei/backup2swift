@@ -2,8 +2,9 @@
 backup2swift is backup data to OpenStack Swift
 ==============================================
 
-This tool is that backup data to OpenStack Swift. provides features are command line interface, and backup rotatition.
-This tool is depend on swiftsc, that is simple client library of OpenStack Swift.
+This utility is used to backup data to OpenStack Swift.
+It provides a command interface and backup rotation.
+It depends on a simple client library called swiftsc.
 
 
 Requirements
