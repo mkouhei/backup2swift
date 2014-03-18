@@ -18,11 +18,25 @@
 
 import os
 import sys
-
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+import multiprocessing
 
 sys.path.insert(0, 'src')
 import backup2swift
+
+
+class Tox(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import tox
+        errno = tox.cmdline(self.test_args)
+        sys.exit(errno)
+
 
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -32,6 +46,9 @@ classifiers = [
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -59,17 +76,12 @@ setup(name='backup2swift',
       classifiers=classifiers,
       packages=find_packages('src'),
       package_dir={'': 'src'},
-      data_files=[('share/backup2swift/examples', ['examples/bu2sw.conf', 'examples/bu2sw_ignore_verify.conf'])],
+      data_files=[('share/backup2swift/examples',
+                   ['examples/bu2sw.conf',
+                    'examples/bu2sw_ignore_verify.conf'])],
       install_requires=requires,
-      extras_require=dict(
-        test=[
-            'pytest',
-            'pep8',
-            'mock',
-            ],
-        ),
-      test_suite='tests',
-      tests_require=['pytest','pep8','mock'],
+      tests_require=['tox'],
+      cmdclass={'test': Tox},
       entry_points={
         "console_scripts": [
             "bu2sw = backup2swift.command:main",
