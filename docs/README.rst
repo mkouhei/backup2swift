@@ -6,6 +6,12 @@ This utility is used to backup data to OpenStack Swift.
 It provides a command interface and backup rotation.
 It depends on a simple client library called swiftsc.
 
+.. image:: https://secure.travis-ci.org/mkouhei/backup2swift.png?branch=devel
+   :target: http://travis-ci.org/mkouhei/backup2swift
+.. image:: https://coveralls.io/repos/mkouhei/backup2swift/badge.png?branch=devel
+   :target: https://coveralls.io/r/mkouhei/backup2swift?branch=devel
+.. image:: https://pypip.in/v/backup2swift/badge.png
+   :target: https://crate.io/packages/backup2swift
 
 Requirements
 ------------

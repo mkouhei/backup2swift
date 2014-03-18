@@ -1,7 +1,10 @@
 language: python
 python:
   - "2.7"
-  - "3.2"
-  - "3.3"
+before_script:
+  - pip install python-coveralls
 script:
-  - bash utils/testing_travis.sh
+  - python setup.py test
+  - python setup.py check -r
+after_success:
+  - coveralls
