@@ -59,8 +59,8 @@ if sys.version_info < (3, 0):
                 '--benchmark',
                 '--repeat',
                 '--show-pep8',
-                #'--qq',
-                #'-v',
+                # '--qq',
+                # '-v',
                 BASE_DIR, ]
 
             options, args = pep8.process_options(arglist)

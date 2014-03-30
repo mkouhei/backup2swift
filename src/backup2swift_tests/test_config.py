@@ -26,18 +26,18 @@ class ConfigTests(unittest.TestCase):
 
     def test_check_config(self):
         self.assertEqual(('https://example.org/auth/v1.0',
-                         'username',
-                         'password',
-                         '10',
+                          'username',
+                          'password',
+                          '10',
                           True,
                           None),
                          c.check_config('examples/bu2sw.conf'))
 
     def test_check_config_ignore(self):
         self.assertEqual(('https://example.org/auth/v1.0',
-                         'username',
-                         'password',
-                         '10',
+                          'username',
+                          'password',
+                          '10',
                           False,
                           None),
                          c.check_config('examples/bu2sw_ignore_verify.conf'))
