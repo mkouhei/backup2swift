@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-import sys
 import os
-sys.path.append(os.path.abspath('src'))
 import backup2swift.command as c
 import backup2swift_tests.test_vars as v
 

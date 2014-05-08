@@ -18,9 +18,6 @@
 import unittest
 from mock import patch
 import swiftsc.client
-import sys
-import os.path
-sys.path.append(os.path.abspath('src'))
 import backup2swift.backup as b
 import backup2swift_tests.test_vars as v
 
