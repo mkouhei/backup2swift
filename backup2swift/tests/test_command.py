@@ -17,11 +17,16 @@
 """
 import unittest
 import os
+import argparse
+from backup2swift import __version__
 from backup2swift import command as c
 from backup2swift.tests import test_vars as v
 
 
 class CommandTests(unittest.TestCase):
+
+    def setUp(self):
+        self.parser = argparse.ArgumentParser()
 
     def test_check_config_file(self):
         self.assertEqual(v.config_file,
@@ -30,3 +35,77 @@ class CommandTests(unittest.TestCase):
     def test_check_config_file_fail(self):
         if not os.path.isfile(os.path.join(os.environ['HOME'], '.bu2sw.conf')):
             self.assertRaises(IOError, c.check_config_file, None)
+
+    def test_setoption_config(self):
+        c.setoption(self.parser, 'config')
+        self.assertEqual(
+            self.parser.parse_args('-c dummy.conf'.split()).config,
+            'dummy.conf')
+        self.assertEqual(
+            self.parser.parse_args('--config dummy.conf'.split()).config,
+            'dummy.conf')
+
+    def test_setoption_list_command(self):
+        c.setoption(self.parser, 'command')
+        self.assertTrue(self.parser.parse_args('-l'.split()).list)
+        self.assertTrue(self.parser.parse_args('--list'.split()).list)
+
+    def test_setoption_push_command(self):
+        c.setoption(self.parser, 'command')
+        self.assertEqual(['foo'],
+                         self.parser.parse_args('-p foo'.split()).path)
+        self.assertEqual(['foo', 'bar'],
+                         self.parser.parse_args(
+                             '--path foo bar'.split()).path)
+
+    def test_setoption_stdin_command(self):
+        c.setoption(self.parser, 'command')
+        self.assertEqual('foo',
+                         self.parser.parse_args('-s foo'.split()).stdin)
+        self.assertEqual('foo',
+                         self.parser.parse_args('--stdin foo'.split()).stdin)
+
+    def test_setoption_delete_command(self):
+        c.setoption(self.parser, 'command')
+        self.assertEqual(['foo'],
+                         self.parser.parse_args('-d foo'.split()).delete)
+        self.assertEqual(['foo', 'bar'],
+                         self.parser.parse_args(
+                             '--delete foo bar'.split()).delete)
+
+    def test_setoption_retrieve_command(self):
+        c.setoption(self.parser, 'command')
+        self.assertEqual(['foo'],
+                         self.parser.parse_args(
+                             '-r foo'.split()).retrieve)
+        self.assertEqual(['foo', 'bar'],
+                         self.parser.parse_args(
+                             '--retrieve foo bar'.split()).retrieve)
+
+    def test_setoption_list_container(self):
+        c.setoption(self.parser, 'command')
+        self.assertEqual('dummy',
+                         self.parser.parse_args(
+                             '-C dummy -l'.split()).container)
+        self.assertEqual('dummy',
+                         self.parser.parse_args(
+                             '--container dummy -l'.split()).container)
+
+    def test_setoption_list_verbose(self):
+        c.setoption(self.parser, 'command')
+        c.setoption(self.parser, 'verbose')
+        self.assertTrue(self.parser.parse_args('-l -v'.split()).verbose)
+        self.assertTrue(self.parser.parse_args('--list -v'.split()).verbose)
+        self.assertTrue(self.parser.parse_args('-l --verbose'.split()).verbose)
+        self.assertTrue(self.parser.parse_args(
+            '--list --verbose'.split()).verbose)
+
+    def test_setoption_retrieve_output(self):
+        c.setoption(self.parser, 'command')
+        c.setoption(self.parser, 'verbose')
+        self.assertEqual('bar',
+                         self.parser.parse_args(
+                             '-r foo -o bar'.split()).output)
+        self.assertEqual('bar',
+                         self.parser.parse_args(
+                             '--r foo --output bar'.split()).output)
