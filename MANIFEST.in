@@ -1,5 +1,6 @@
 include MANIFEST.in
+include README.rst
 include LICENSE
 recursive-include docs *.rst *.1
 recursive-include examples *.conf
-recursive-include src *.py *.txt
+recursive-include backup2swift *.py *.txt

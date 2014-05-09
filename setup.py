@@ -16,32 +16,49 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
+import os.path
 import sys
-
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+import multiprocessing
 
-sys.path.insert(0, 'src')
 import backup2swift
+
+
+class Tox(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import tox
+        errno = tox.cmdline(self.test_args)
+        sys.exit(errno)
+
 
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "License :: OSI Approved :: "
+    "GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Environment :: OpenStack",
 ]
 
-long_description = \
-        open(os.path.join("docs","README.rst")).read() + \
-        open(os.path.join("docs","TODO.rst")).read() + \
-        open(os.path.join("docs","HISTORY.rst")).read()
+long_description = (
+    open("README.rst").read() +
+    open(os.path.join("docs", "TODO.rst")).read() +
+    open(os.path.join("docs", "HISTORY.rst")).read())
 
 if sys.version_info > (2, 6) and sys.version_info < (2, 7):
     requires = ['setuptools', 'swiftsc', 'argparse']
@@ -57,22 +74,13 @@ setup(name='backup2swift',
       url='https://github.com/mkouhei/backup2swift',
       license=' GNU General Public License version 3',
       classifiers=classifiers,
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
-      data_files=[('share/backup2swift/examples', ['examples/bu2sw.conf', 'examples/bu2sw_ignore_verify.conf'])],
+      packages=find_packages(),
+      data_files=[('share/backup2swift/examples',
+                   ['examples/bu2sw.conf',
+                    'examples/bu2sw_ignore_verify.conf'])],
       install_requires=requires,
-      extras_require=dict(
-        test=[
-            'pytest',
-            'pep8',
-            'mock',
-            ],
-        ),
-      test_suite='tests',
-      tests_require=['pytest','pep8','mock'],
+      tests_require=['tox'],
+      cmdclass={'test': Tox},
       entry_points={
-        "console_scripts": [
-            "bu2sw = backup2swift.command:main",
-            ]
-        },
-)
+          "console_scripts": ["bu2sw = backup2swift.command:main"]
+      },)

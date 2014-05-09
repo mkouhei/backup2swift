@@ -1,6 +1,13 @@
 History
 -------
 
+0.8.2 (2014-05-10)
+^^^^^^^^^^^^^^^^^^
+
+* Refactoring.
+* Apply tox for unit test.
+* Support Python 3.4, PyPI.
+
 0.8.1 (2014-01-10)
 ^^^^^^^^^^^^^^^^^^
 

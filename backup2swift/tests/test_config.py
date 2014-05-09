@@ -16,28 +16,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-import sys
-import os.path
-sys.path.append(os.path.abspath('src'))
-import backup2swift.config as c
+from backup2swift import config as c
 
 
 class ConfigTests(unittest.TestCase):
 
     def test_check_config(self):
         self.assertEqual(('https://example.org/auth/v1.0',
-                         'username',
-                         'password',
-                         '10',
+                          'username',
+                          'password',
+                          '10',
                           True,
                           None),
                          c.check_config('examples/bu2sw.conf'))
 
     def test_check_config_ignore(self):
         self.assertEqual(('https://example.org/auth/v1.0',
-                         'username',
-                         'password',
-                         '10',
+                          'username',
+                          'password',
+                          '10',
                           False,
                           None),
                          c.check_config('examples/bu2sw_ignore_verify.conf'))

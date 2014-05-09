@@ -16,16 +16,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-import sys
-import os.path
-sys.path.append(os.path.abspath('src'))
-import backup2swift as b
+from backup2swift import utils as u
+from backup2swift.tests import test_vars as v
 
 
-class InitTests(unittest.TestCase):
+class UtilsTests(unittest.TestCase):
 
-    def test__version__(self):
-        self.assertTrue(b.__version__)
+    def test_get_columns_width(self):
+        self.assertListEqual(v.objects_row_width,
+                             u.get_columns_width(v.header_width,
+                                                 v.objects_header,
+                                                 v.objects))
 
-    def test__name__(self):
-        self.assertTrue(b.__name__)
+    def test_get_columns_width_fail(self):
+        self.assertNotEqual(v.dummy_row_width,
+                            u.get_columns_width(v.header_width,
+                                                v.objects_header,
+                                                v.objects))
+
+    def test_FQDN(self):
+        self.assertTrue(isinstance(u.FQDN, str))

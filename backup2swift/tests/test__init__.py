@@ -15,4 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.8.1'
+import unittest
+import backup2swift as b
+
+
+class InitTests(unittest.TestCase):
+
+    def test__version__(self):
+        self.assertTrue(b.__version__)
+
+    def test__name__(self):
+        self.assertTrue(b.__name__)

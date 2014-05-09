@@ -23,9 +23,9 @@ objects = [{'bytes': 5246,
             'last_modified': '2013-05-01T09:23:26.092580',
             'name': 'sample_3.txt'}]
 objects_name_l = [i.get('name') for i in objects]
-test_file = os.path.abspath('src/backup2swift_tests/sample.txt')
-test_files = [os.path.abspath('src/backup2swift_tests/sample.txt'),
-              os.path.abspath('src/backup2swift_tests/sample2.txt')]
+test_file = os.path.abspath('backup2swift/tests/sample.txt')
+test_files = [os.path.abspath('backup2swift/tests/sample.txt'),
+              os.path.abspath('backup2swift/tests/sample2.txt')]
 object_name = 'sample.txt'
 objects_name = ['sample.txt', 'sample2.txt']
 objects_header = ['bytes', 'content_type', 'hash', 'last_modified', 'name']
