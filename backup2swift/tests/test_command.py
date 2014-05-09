@@ -18,6 +18,11 @@
 import unittest
 import os
 import argparse
+import sys
+if sys.version_info < (3, 0):
+    from StringIO import StringIO
+else:
+    from io import StringIO
 from backup2swift import __version__
 from backup2swift import command as c
 from backup2swift.tests import test_vars as v
@@ -27,6 +32,14 @@ class CommandTests(unittest.TestCase):
 
     def setUp(self):
         self.parser = argparse.ArgumentParser()
+        self.capture = sys.stdout
+        self.capture_err = sys.stderr
+        sys.stdout = StringIO()
+        sys.stderr = StringIO()
+
+    def tearDown(self):
+        sys.stdout = self.capture
+        sys.stderr = self.capture_err
 
     def test_check_config_file(self):
         self.assertEqual(v.config_file,
@@ -35,6 +48,22 @@ class CommandTests(unittest.TestCase):
     def test_check_config_file_fail(self):
         if not os.path.isfile(os.path.join(os.environ['HOME'], '.bu2sw.conf')):
             self.assertRaises(IOError, c.check_config_file, None)
+
+    def test_parse_options(self):
+        with self.assertRaises(SystemExit) as e:
+            c.parse_options()
+        self.assertEqual(2, e.exception.code)
+        self.assertTrue(sys.stderr.getvalue())
+
+    def test_setoption_version(self):
+        c.setoption(self.parser, 'version')
+        with self.assertRaises(SystemExit) as e:
+            self.parser.parse_args('-V'.split())
+        self.assertEqual(0, e.exception.code)
+        if sys.version_info > (3, 4):
+            self.assertEqual(__version__ + '\n', sys.stdout.getvalue())
+        else:
+            self.assertEqual(__version__ + '\n', sys.stderr.getvalue())
 
     def test_setoption_config(self):
         c.setoption(self.parser, 'config')
