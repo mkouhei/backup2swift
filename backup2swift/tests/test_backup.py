@@ -17,7 +17,6 @@
 """
 import unittest
 from mock import patch
-import swiftsc.client
 from backup2swift import backup as b
 from backup2swift.tests import test_vars as v
 
@@ -128,7 +127,7 @@ class BackupTests(unittest.TestCase):
                          v.objects)
 
     @patch('swiftsc.client.is_container', return_value=False)
-    def test_retrieve_backup_data_list(self, m):
+    def test_retrieve_backup_nonedata_list(self, m):
         self.assertEqual(self.b.retrieve_backup_data_list(),
                          [])
 
@@ -177,5 +176,5 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.retrieve_object', return_value=(False, ''))
-    def test_retrieve_backup_data(self, m1, m2, m3):
+    def test_retrieve_backup_data_fail(self, m1, m2, m3):
         self.assertRaises(RuntimeError, self.b.retrieve_backup_data, "dummy")

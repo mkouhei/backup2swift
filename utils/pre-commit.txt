@@ -2,7 +2,8 @@
 
 which py.test || exit 1
 cd $(git rev-parse --show-toplevel)
-find src -name '*.pyc' -delete
+find backup2swift -name '*.pyc' -delete
 python setup.py test || exit 1
 python setup.py check -r || exit 1
-pychecker -X -s src/backup2swift/*.py || exit 1
+pychecker -X -s backup2swift/*.py
+
