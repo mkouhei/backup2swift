@@ -40,7 +40,8 @@ class Tox(TestCommand):
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "License :: OSI Approved :: "
+    "GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3.2",
@@ -54,10 +55,10 @@ classifiers = [
     "Environment :: OpenStack",
 ]
 
-long_description = \
-        open(os.path.join("docs","README.rst")).read() + \
-        open(os.path.join("docs","TODO.rst")).read() + \
-        open(os.path.join("docs","HISTORY.rst")).read()
+long_description = (
+    open(os.path.join("docs", "README.rst")).read() +
+    open(os.path.join("docs", "TODO.rst")).read() +
+    open(os.path.join("docs", "HISTORY.rst")).read())
 
 if sys.version_info > (2, 6) and sys.version_info < (2, 7):
     requires = ['setuptools', 'swiftsc', 'argparse']
@@ -81,8 +82,5 @@ setup(name='backup2swift',
       tests_require=['tox'],
       cmdclass={'test': Tox},
       entry_points={
-        "console_scripts": [
-            "bu2sw = backup2swift.command:main",
-            ]
-        },
-)
+          "console_scripts": ["bu2sw = backup2swift.command:main"]
+      },)
