@@ -16,13 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
+import os.path
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 import multiprocessing
 
-sys.path.insert(0, 'src')
 import backup2swift
 
 
@@ -74,8 +73,7 @@ setup(name='backup2swift',
       url='https://github.com/mkouhei/backup2swift',
       license=' GNU General Public License version 3',
       classifiers=classifiers,
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
+      packages=find_packages(),
       data_files=[('share/backup2swift/examples',
                    ['examples/bu2sw.conf',
                     'examples/bu2sw_ignore_verify.conf'])],

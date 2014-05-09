@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-import backup2swift.config as c
+from backup2swift import config as c
 
 
 class ConfigTests(unittest.TestCase):

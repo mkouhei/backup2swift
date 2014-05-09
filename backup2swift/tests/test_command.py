@@ -16,23 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-import backup2swift.utils as u
-import backup2swift_tests.test_vars as v
+import os
+from backup2swift import command as c
+from backup2swift.tests import test_vars as v
 
 
-class UtilsTests(unittest.TestCase):
+class CommandTests(unittest.TestCase):
 
-    def test_get_columns_width(self):
-        self.assertListEqual(v.objects_row_width,
-                             u.get_columns_width(v.header_width,
-                                                 v.objects_header,
-                                                 v.objects))
+    def test_check_config_file(self):
+        self.assertEqual(v.config_file,
+                         c.check_config_file(v.config_file))
 
-    def test_get_columns_width_fail(self):
-        self.assertNotEqual(v.dummy_row_width,
-                            u.get_columns_width(v.header_width,
-                                                v.objects_header,
-                                                v.objects))
-
-    def test_FQDN(self):
-        self.assertTrue(isinstance(u.FQDN, str))
+    def test_check_config_file_fail(self):
+        if not os.path.isfile(os.path.join(os.environ['HOME'], '.bu2sw.conf')):
+            self.assertRaises(IOError, c.check_config_file, None)

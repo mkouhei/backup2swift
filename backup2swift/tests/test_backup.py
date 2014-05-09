@@ -18,8 +18,8 @@
 import unittest
 from mock import patch
 import swiftsc.client
-import backup2swift.backup as b
-import backup2swift_tests.test_vars as v
+from backup2swift import backup as b
+from backup2swift.tests import test_vars as v
 
 
 class BackupTests(unittest.TestCase):
