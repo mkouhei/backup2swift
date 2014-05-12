@@ -123,7 +123,7 @@ def print_footer(columns_width):
         columns_width: list of columns string length
     """
     border = ''
-    for i, col_width in enumerate(columns_width):
+    for _, col_width in enumerate(columns_width):
         border += "-" * col_width + '-'
     print("%s" % border)
 
@@ -154,5 +154,6 @@ def generate_row_s(row, columns_width, header=None):
 
 
 def multiprocess(func, *args, **kwargs):
+    """ multiprocessing for backup / delete object / retrieve object. """
     proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
     proc.start()

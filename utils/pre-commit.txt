@@ -6,4 +6,12 @@ find backup2swift -name '*.pyc' -delete
 python setup.py test || exit 1
 python setup.py check -r || exit 1
 pychecker -X -s backup2swift/*.py
-
+pylint -d import-error \
+       -d expression-not-assigned \
+       -d superfluous-parens \
+       -d duplicate-code \
+       -d too-many-public-methods \
+       -d no-self-use \
+       -d arguments-differ \
+       -d unused-argument \
+       -d no-member backup2swift

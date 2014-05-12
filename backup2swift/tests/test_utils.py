@@ -26,36 +26,44 @@ from backup2swift.tests import test_vars as v
 
 
 class UtilsTests(unittest.TestCase):
+    """ Unit test of utils module. """
 
     def setUp(self):
+        """ initialize unit test """
         self.capture = sys.stdout
         sys.stdout = StringIO()
 
     def tearDown(self):
+        """ finalize unit test """
         sys.stdout = self.capture
 
     def test_list_data(self):
-        u.list_data(v.objects)
-        self.assertEqual(v.object_table,
+        """ unit test for list_data() """
+        u.list_data(v.OBJECTS)
+        self.assertEqual(v.OBJECT_TABLE,
                          sys.stdout.getvalue())
 
     def test_logging(self):
-        with self.assertRaises(SystemExit) as e:
+        """ unit test for logging """
+        with self.assertRaises(SystemExit) as error:
             u.logging(3, 'test message')
-        self.assertEqual(1, e.exception.code)
+        self.assertEqual(1, error.exception.code)
         self.assertEqual('test message\n', sys.stdout.getvalue())
 
     def test_get_columns_width(self):
-        self.assertListEqual(v.objects_row_width,
-                             u.get_columns_width(v.header_width,
-                                                 v.objects_header,
-                                                 v.objects))
+        """ unit test for get_columns_width """
+        self.assertListEqual(v.OBJECTS_ROW_WIDTH,
+                             u.get_columns_width(v.HEADER_WIDTH,
+                                                 v.OBJECTS_HEADER,
+                                                 v.OBJECTS))
 
     def test_get_columns_width_fail(self):
-        self.assertNotEqual(v.dummy_row_width,
-                            u.get_columns_width(v.header_width,
-                                                v.objects_header,
-                                                v.objects))
+        """ unit test for get_columns_width """
+        self.assertNotEqual(v.DUMMY_ROW_WIDTH,
+                            u.get_columns_width(v.HEADER_WIDTH,
+                                                v.OBJECTS_HEADER,
+                                                v.OBJECTS))
 
-    def test_FQDN(self):
+    def test_fqdn(self):
+        """ unit test for FQDN """
         self.assertTrue(isinstance(u.FQDN, str))

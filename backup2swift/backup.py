@@ -26,9 +26,40 @@ ROTATE_LIMIT = 10
 
 
 class Backup(object):
-    def __init__(self, auth_url, username, password, rotate_limit=ROTATE_LIMIT,
-                 verify=True, tenant_id=None, container_name=utils.FQDN):
-        self.verify = verify
+    """
+    Arguments:
+        auth_url:       authentication url of swift
+        username:       username for swift
+        password:       password for swift
+        rotate_limit:   limitation count of rotation
+        verify:         verification of ssl certification
+        tenant_id:      tenant id when using KeyStone
+        container_name: container name of swift
+    """
+
+    def __init__(self, *args, **kwargs):
+        auth_url = args[0]
+        username = args[1]
+        password = args[2]
+        if kwargs.get('rotate_limit'):
+            rotate_limit = kwargs.get('rotate_limit')
+        else:
+            rotate_limit = ROTATE_LIMIT
+        if kwargs.get('verify'):
+            self.verify = kwargs.get('verify')
+        else:
+            self.verify = True
+
+        if kwargs.get('tenant_id'):
+            tenant_id = kwargs.get('tenant_id')
+        else:
+            tenant_id = None
+
+        if kwargs.get('container_name'):
+            container_name = kwargs.get('container_name')
+        else:
+            container_name = utils.FQDN
+
         (self.token,
          self.storage_url) = client.retrieve_token(auth_url,
                                                    username,
@@ -68,16 +99,16 @@ class Backup(object):
         if not client.is_container(self.token, self.storage_url,
                                    self.container_name, verify=self.verify):
             # False is no container
-            rc = client.create_container(self.token,
-                                         self.storage_url,
-                                         self.container_name,
-                                         verify=self.verify)
-            if not (rc == 201 or rc == 202):
+            status_code = client.create_container(self.token,
+                                                  self.storage_url,
+                                                  self.container_name,
+                                                  verify=self.verify)
+            if not (status_code == 201 or status_code == 202):
                 # 201; Created, 202; Accepted
                 raise RuntimeError('Failed to create the container "%s"'
                                    % self.container_name)
 
-        objects_list = [object.get('name') for object in
+        objects_list = [obj.get('name') for obj in
                         client.list_objects(self.token,
                                             self.storage_url,
                                             self.container_name,
@@ -91,13 +122,13 @@ class Backup(object):
         if object_name in objects_list:
             self.rotate(filename, object_name, objects_list)
         else:
-            rc = client.create_object(self.token,
-                                      self.storage_url,
-                                      self.container_name,
-                                      filename,
-                                      object_name=object_name,
-                                      verify=self.verify)
-            if not (rc == 201 or rc == 202):
+            status_code = client.create_object(self.token,
+                                               self.storage_url,
+                                               self.container_name,
+                                               filename,
+                                               object_name=object_name,
+                                               verify=self.verify)
+            if not (status_code == 201 or status_code == 202):
                 raise RuntimeError('Failed to create the object "%s"'
                                    % object_name)
         return True
@@ -113,18 +144,18 @@ class Backup(object):
         # copy current object to new object
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         new_object_name = object_name + '_' + timestamp
-        rc = client.copy_object(self.token, self.storage_url,
-                                self.container_name, object_name,
-                                new_object_name, verify=self.verify)
-        if rc != 201:
+        status_code = client.copy_object(self.token, self.storage_url,
+                                         self.container_name, object_name,
+                                         new_object_name, verify=self.verify)
+        if status_code != 201:
             raise RuntimeError('Failed to copy object "%s"' % new_object_name)
 
         # create new object
-        rc = client.create_object(self.token, self.storage_url,
-                                  self.container_name, filename,
-                                  object_name=object_name,
-                                  verify=self.verify)
-        if rc != 201:
+        status_code = client.create_object(self.token, self.storage_url,
+                                           self.container_name, filename,
+                                           object_name=object_name,
+                                           verify=self.verify)
+        if status_code != 201:
             raise RuntimeError('Failed to create the object "%s"'
                                % object_name)
 
@@ -178,12 +209,12 @@ class Backup(object):
               client.is_object(self.token, self.storage_url,
                                self.container_name, object_name,
                                verify=self.verify)):
-            rc, content = client.retrieve_object(self.token,
-                                                 self.storage_url,
-                                                 self.container_name,
-                                                 object_name,
-                                                 verify=self.verify)
-            if not rc:
+            status_code, content = client.retrieve_object(self.token,
+                                                          self.storage_url,
+                                                          self.container_name,
+                                                          object_name,
+                                                          verify=self.verify)
+            if not status_code:
                 raise RuntimeError('Failed to retrieve the object "%s"'
                                    % object_name)
             if output_filepath:
@@ -198,8 +229,8 @@ class Backup(object):
                 mode = 'bw'
             else:
                 mode = 'w'
-            with open(fpath, mode) as f:
-                f.write(content)
+            with open(fpath, mode) as _file:
+                _file.write(content)
         else:
             raise RuntimeError('No such object "%s"' % object_name)
 
@@ -218,12 +249,12 @@ class Backup(object):
               client.is_object(self.token, self.storage_url,
                                self.container_name, object_name,
                                verify=self.verify)):
-            rc = client.delete_object(self.token,
-                                      self.storage_url,
-                                      self.container_name,
-                                      object_name,
-                                      verify=self.verify)
-            if not rc == 204:
+            status_code = client.delete_object(self.token,
+                                               self.storage_url,
+                                               self.container_name,
+                                               object_name,
+                                               verify=self.verify)
+            if not status_code == 204:
                 raise RuntimeError('Failed to delete the object "%s"'
                                    % object_name)
             return True

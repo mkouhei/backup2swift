@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+""" unit test of pep8 """
 import os
 import unittest
 import pep8
@@ -8,7 +9,10 @@ BASE_PATH = os.path.dirname(os.path.dirname(
 
 
 class PEP8Test(unittest.TestCase):
+    """ Unit test of PEP8 style guide """
+
     def test_pep8(self):
+        """ test runner """
         pep8.DEFAULT_EXCLUDE = ('.tox,*.egg,migrations/,'
                                 'shiori/bookmark/migrations/')
         pep8style = pep8.StyleGuide([['statistics', True],

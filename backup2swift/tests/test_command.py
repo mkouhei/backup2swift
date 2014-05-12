@@ -29,8 +29,10 @@ from backup2swift.tests import test_vars as v
 
 
 class CommandTests(unittest.TestCase):
+    """ Test module for command. """
 
     def setUp(self):
+        """ initialize """
         self.parser = argparse.ArgumentParser()
         self.capture = sys.stdout
         self.capture_err = sys.stderr
@@ -38,34 +40,40 @@ class CommandTests(unittest.TestCase):
         sys.stderr = StringIO()
 
     def tearDown(self):
+        """ finalize """
         sys.stdout = self.capture
         sys.stderr = self.capture_err
 
     def test_check_config_file(self):
-        self.assertEqual(v.config_file,
-                         c.check_config_file(v.config_file))
+        """ unit test for check_config_file """
+        self.assertEqual(v.CONFIG_FILE,
+                         c.check_config_file(v.CONFIG_FILE))
 
     def test_check_config_file_fail(self):
+        """ unit test for check_config_file fail case """
         if not os.path.isfile(os.path.join(os.environ['HOME'], '.bu2sw.conf')):
             self.assertRaises(IOError, c.check_config_file, None)
 
     def test_parse_options(self):
-        with self.assertRaises(SystemExit) as e:
+        """ unit test for parse_options """
+        with self.assertRaises(SystemExit) as error:
             c.parse_options()
-        self.assertEqual(2, e.exception.code)
+        self.assertEqual(2, error.exception.code)
         self.assertTrue(sys.stderr.getvalue())
 
     def test_setoption_version(self):
+        """ unit test for version at set_option """
         c.setoption(self.parser, 'version')
-        with self.assertRaises(SystemExit) as e:
+        with self.assertRaises(SystemExit) as error:
             self.parser.parse_args('-V'.split())
-        self.assertEqual(0, e.exception.code)
+        self.assertEqual(0, error.exception.code)
         if sys.version_info > (3, 4):
             self.assertEqual(__version__ + '\n', sys.stdout.getvalue())
         else:
             self.assertEqual(__version__ + '\n', sys.stderr.getvalue())
 
     def test_setoption_config(self):
+        """ unit test for config at set_option """
         c.setoption(self.parser, 'config')
         self.assertEqual(
             self.parser.parse_args('-c dummy.conf'.split()).config,
@@ -75,11 +83,13 @@ class CommandTests(unittest.TestCase):
             'dummy.conf')
 
     def test_setoption_list_command(self):
+        """ unit test for list command at set_option """
         c.setoption(self.parser, 'command')
         self.assertTrue(self.parser.parse_args('-l'.split()).list)
         self.assertTrue(self.parser.parse_args('--list'.split()).list)
 
     def test_setoption_push_command(self):
+        """ unit test for push command at set_option """
         c.setoption(self.parser, 'command')
         self.assertEqual(['foo'],
                          self.parser.parse_args('-p foo'.split()).path)
@@ -88,6 +98,7 @@ class CommandTests(unittest.TestCase):
                              '--path foo bar'.split()).path)
 
     def test_setoption_stdin_command(self):
+        """ unit test for stdin command at set_option """
         c.setoption(self.parser, 'command')
         self.assertEqual('foo',
                          self.parser.parse_args('-s foo'.split()).stdin)
@@ -95,6 +106,7 @@ class CommandTests(unittest.TestCase):
                          self.parser.parse_args('--stdin foo'.split()).stdin)
 
     def test_setoption_delete_command(self):
+        """ unit test for delete command at set_option """
         c.setoption(self.parser, 'command')
         self.assertEqual(['foo'],
                          self.parser.parse_args('-d foo'.split()).delete)
@@ -103,6 +115,7 @@ class CommandTests(unittest.TestCase):
                              '--delete foo bar'.split()).delete)
 
     def test_setoption_retrieve_command(self):
+        """ unit test for retrieve command at set_option """
         c.setoption(self.parser, 'command')
         self.assertEqual(['foo'],
                          self.parser.parse_args(
@@ -112,6 +125,7 @@ class CommandTests(unittest.TestCase):
                              '--retrieve foo bar'.split()).retrieve)
 
     def test_setoption_list_container(self):
+        """ unit test for list command at set_option """
         c.setoption(self.parser, 'command')
         self.assertEqual('dummy',
                          self.parser.parse_args(
@@ -121,6 +135,7 @@ class CommandTests(unittest.TestCase):
                              '--container dummy -l'.split()).container)
 
     def test_setoption_list_verbose(self):
+        """ unit test for list verbose command at set_option """
         c.setoption(self.parser, 'command')
         c.setoption(self.parser, 'verbose')
         self.assertTrue(self.parser.parse_args('-l -v'.split()).verbose)
@@ -130,6 +145,7 @@ class CommandTests(unittest.TestCase):
             '--list --verbose'.split()).verbose)
 
     def test_setoption_retrieve_output(self):
+        """ unit test for retrieve output command at set_option """
         c.setoption(self.parser, 'command')
         c.setoption(self.parser, 'verbose')
         self.assertEqual('bar',
