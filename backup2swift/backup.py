@@ -75,7 +75,7 @@ class Backup(object):
             if not (rc == 201 or rc == 202):
                 # 201; Created, 202; Accepted
                 raise RuntimeError('Failed to create the container "%s"'
-                                   % self.container_name, verify=self.verify)
+                                   % self.container_name)
 
         objects_list = [object.get('name') for object in
                         client.list_objects(self.token,

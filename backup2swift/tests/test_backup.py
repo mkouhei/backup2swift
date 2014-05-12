@@ -58,7 +58,9 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.list_objects', return_value=v.objects)
     @patch('swiftsc.client.create_object', return_value=201)
     def test_backup_file_fail_create_cont(self, m1, m2, m3, m4):
-        self.assertRaises(TypeError, self.b.backup_file("examples/bu2sw.conf"))
+        self.assertRaises(RuntimeError,
+                          self.b.backup_file,
+                          "examples/bu2sw.conf")
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.create_container', return_value=202)
