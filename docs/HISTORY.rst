@@ -1,6 +1,16 @@
 History
 -------
 
+0.8.3 (2014-11-16)
+^^^^^^^^^^^^^^^^^^
+
+* Fixed #20 "rotate_limit" seems not to work
+* Unsupported Python3.2, PyPy
+* Appended pass through tox from python setup.py test.
+* Integrated pylint, pychecker, pep8, flakes to Tox.
+* Fixed violation of pylint.
+* Fixed argument of exception at backup_file method.
+
 0.8.2 (2014-05-10)
 ^^^^^^^^^^^^^^^^^^
 
