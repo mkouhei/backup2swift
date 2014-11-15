@@ -25,6 +25,7 @@ DEFAULT_CONF = '.bu2sw.conf'
 
 
 def parse_options():
+    """ setup options. """
     parser = argparse.ArgumentParser(description='usage')
     setoption(parser, 'version')
     setoption(parser, 'config')
@@ -36,7 +37,6 @@ def parse_options():
 
 def setoption(parser, keyword):
     """
-
     Arguments:
         parser: object of argparse
         keyword: switching keyword
@@ -102,33 +102,35 @@ def execute_swift_client(args):
         container_name = args.container
     else:
         container_name = utils.FQDN
-    b = backup.Backup(auth_url, username, password, rotate_limit,
-                      verify=verify, tenant_id=tenant_id,
-                      container_name=container_name)
+    bkup = backup.Backup(auth_url, username, password,
+                         rotate_limit=rotate_limit,
+                         verify=verify, tenant_id=tenant_id,
+                         container_name=container_name)
     if args.list:
         # listing backup data
-        backup_l = b.retrieve_backup_data_list(args.verbose)
+        backup_l = bkup.retrieve_backup_data_list(args.verbose)
         utils.list_data(backup_l)
     elif args.path:
         # backup data to swift
-        b.backup(args.path)
+        bkup.backup(args.path)
     elif args.stdin:
         # backup via stdin pipe
         if sys.version_info > (3, 0):
             # for python3
-            b.backup_file(args.stdin, data=sys.stdin.buffer.raw)
+            bkup.backup_file(args.stdin, data=sys.stdin.buffer.raw)
         else:
             # for python2
-            b.backup_file(args.stdin, data=sys.stdin)
+            bkup.backup_file(args.stdin, data=sys.stdin)
     elif args.retrieve:
         # retrive backup data
-        b.retrieve_backup_data(args.retrieve, args.output)
+        bkup.retrieve_backup_data(args.retrieve, args.output)
     elif args.delete:
         # delete backup data
-        b.delete_backup_data(args.delete)
+        bkup.delete_backup_data(args.delete)
 
 
 def main():
+    """ main function """
     try:
         args = parse_options()
         args.func(args)

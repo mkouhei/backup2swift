@@ -17,7 +17,6 @@
 """
 import syslog
 import multiprocessing
-import sys
 import socket
 import backup2swift
 
@@ -45,18 +44,11 @@ def list_data(data):
         data: list of data
     """
     for i in data:
-        if sys.version_info < (3, 0):
-            if isinstance(i, unicode):
-                print(i)
-            elif isinstance(i, dict):
-                pretty_print(list(i.keys()), data)
-                break
+        if isinstance(i, dict):
+            pretty_print(list(i.keys()), data)
+            break
         else:
-            if isinstance(i, str):
-                print(i)
-            elif isinstance(i, dict):
-                pretty_print(list(i.keys()), data)
-                break
+            print(i)
 
 
 def pretty_print(header, rows):
@@ -123,7 +115,7 @@ def print_footer(columns_width):
         columns_width: list of columns string length
     """
     border = ''
-    for i, col_width in enumerate(columns_width):
+    for _, col_width in enumerate(columns_width):
         border += "-" * col_width + '-'
     print("%s" % border)
 
@@ -154,5 +146,6 @@ def generate_row_s(row, columns_width, header=None):
 
 
 def multiprocess(func, *args, **kwargs):
+    """ multiprocessing for backup / delete object / retrieve object. """
     proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
     proc.start()

@@ -20,12 +20,17 @@ import os.path
 import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-import multiprocessing
 
 import backup2swift
 
 
 class Tox(TestCommand):
+    user_options = [('tox-args=', 'a', 'Arguments to pass to tox')]
+
+    def initialize_options(self):
+        TestCommand.initialize_options(self)
+        self.tox_args = None
+
     def finalize_options(self):
         TestCommand.finalize_options(self)
         self.test_args = []
@@ -33,7 +38,11 @@ class Tox(TestCommand):
 
     def run_tests(self):
         import tox
-        errno = tox.cmdline(self.test_args)
+        import shlex
+        if self.tox_args:
+            errno = tox.cmdline(args=shlex.split(self.tox_args))
+        else:
+            errno = tox.cmdline(self.test_args)
         sys.exit(errno)
 
 
@@ -44,11 +53,9 @@ classifiers = [
     "GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2.7",
-    "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -60,10 +67,7 @@ long_description = (
     open(os.path.join("docs", "TODO.rst")).read() +
     open(os.path.join("docs", "HISTORY.rst")).read())
 
-if sys.version_info > (2, 6) and sys.version_info < (2, 7):
-    requires = ['setuptools', 'swiftsc', 'argparse']
-elif sys.version_info > (2, 7):
-    requires = ['setuptools', 'swiftsc']
+requires = ['setuptools', 'swiftsc']
 
 setup(name='backup2swift',
       version=backup2swift.__version__,
