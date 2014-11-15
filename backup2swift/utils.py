@@ -17,7 +17,6 @@
 """
 import syslog
 import multiprocessing
-import sys
 import socket
 import backup2swift
 
@@ -45,18 +44,11 @@ def list_data(data):
         data: list of data
     """
     for i in data:
-        if sys.version_info < (3, 0):
-            if isinstance(i, unicode):
-                print(i)
-            elif isinstance(i, dict):
-                pretty_print(list(i.keys()), data)
-                break
+        if isinstance(i, dict):
+            pretty_print(list(i.keys()), data)
+            break
         else:
-            if isinstance(i, str):
-                print(i)
-            elif isinstance(i, dict):
-                pretty_print(list(i.keys()), data)
-                break
+            print(i)
 
 
 def pretty_print(header, rows):
