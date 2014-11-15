@@ -25,21 +25,21 @@ class BackupTests(unittest.TestCase):
     """ test module of backup """
 
     @patch('swiftsc.client.retrieve_token', return_value=(v.TOKEN, v.S_URL))
-    def setUp(self, _mock):
+    def setUp(self, _mock1):
         """ initialize """
         self.bkup = bkup.Backup(v.AUTH_URL, v.USERNAME, v.PASSWORD)
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup(self, mock1, mock2, mock3):
+    def test_backup(self, _mock1, _mock2, _mock3):
         """ unit test for backup """
         self.assertEqual(self.bkup.backup("."), True)
 
     @patch('swiftsc.client.is_container', return_value=False)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_multiple_files(self, mock1, mock2, mock3):
+    def test_backup_multiple_files(self, _mock1, _mock2, _mock3):
         """ unit test for backup multiple files """
         self.assertEqual(self.bkup.backup(v.TEST_FILES), True)
 
@@ -47,7 +47,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_create_cont(self, mock1, mock2, mock3, mock4):
+    def test_backup_file_create_cont(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for create container and backup file """
         self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
 
@@ -55,7 +55,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=202)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_created_cont(self, mock1, mock2, mock3, mock4):
+    def test_backup_file_created_cont(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for backup file to existed contianer """
         self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
 
@@ -63,7 +63,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=400)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_failed_create_cont(self, mock1, mock2, mock3, mock4):
+    def test_backup_failed_create_cont(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for backup file when failed to create contianer """
         self.assertRaises(RuntimeError,
                           self.bkup.backup_file,
@@ -73,7 +73,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=202)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_create_object(self, mock1, mock2, mock3, mock4):
+    def test_backup_file_create_object(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for backup file and create object """
         self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
 
@@ -81,7 +81,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=202)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_creating_from_stdin(self, mock1, mock2, mock3, mock4):
+    def test_backup_creating_from_stdin(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for backup file and create object form stdin """
         test_data = open("examples/bu2sw.conf", 'rb', buffering=0)
         self.assertEqual(self.bkup.backup_file("bu2sw.conf",
@@ -92,7 +92,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=202)
-    def test_backup_file_override(self, mock1, mock2, mock3, mock4):
+    def test_backup_file_override(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for backup file and override object  """
         self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
 
@@ -100,7 +100,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.create_container', return_value=201)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
     @patch('swiftsc.client.create_object', return_value=400)
-    def test_backup_file_fail(self, mock1, mock2, mock3, mock4):
+    def test_backup_file_fail(self, _mock1, _mock2, _mock3, _mock4):
         """ unit test for fail backup file """
         self.assertRaises(RuntimeError, self.bkup.backup_file,
                           "examples/bu2sw.conf")
@@ -108,20 +108,20 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.copy_object', return_value=201)
     @patch('swiftsc.client.create_object', return_value=201)
     @patch('swiftsc.client.delete_object', return_value=204)
-    def test_rotate(self, mock1, mock2, mock3):
+    def test_rotate(self, _mock1, _mock2, _mock3):
         """ unit test for rotate object """
         self.assertEqual(self.bkup.rotate(v.TEST_FILE, v.OBJECT_NAME,
                                           v.OBJECTS_NAME_L), True)
 
     @patch('swiftsc.client.copy_object', return_value=400)
-    def test_rotate_fail_copy(self, mock1):
+    def test_rotate_fail_copy(self, _mock1):
         """ unit test for fail to copy object """
         self.assertRaises(RuntimeError, self.bkup.rotate,
                           v.TEST_FILE, v.OBJECT_NAME, v.OBJECTS_NAME_L)
 
     @patch('swiftsc.client.copy_object', return_value=201)
     @patch('swiftsc.client.create_object', return_value=400)
-    def test_rotate_fail_create(self, mock1, mock2):
+    def test_rotate_fail_create(self, _mock1, _mock2):
         """ unit test for fail to rotate """
         self.assertRaises(RuntimeError, self.bkup.rotate, v.TEST_FILE,
                           v.OBJECT_NAME, v.OBJECTS_NAME_L)
@@ -130,14 +130,14 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.copy_object', return_value=201)
     @patch('swiftsc.client.create_object', return_value=201)
     @patch('swiftsc.client.delete_object', return_value=400)
-    def test_rotate_fail_delete(self, mock1, mock2, mock3):
+    def test_rotate_fail_delete(self, _mock1, _mock2, _mock3):
         """ unit test for fail to delete """
         self.assertEqual(self.bkup.rotate(v.TEST_FILE, v.OBJECT_NAME,
                                           v.OBJECTS_NAME_L), True)
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    def test_retrieve_backup_data_list(self, mock1, mock2):
+    def test_retrieve_backup_data_list(self, _mock1, _mock2):
         """ unit test for retrieving backup data list """
         self.assertEqual(self.bkup.retrieve_backup_data_list(),
                          v.OBJECTS_NAME_L)
@@ -145,7 +145,7 @@ class BackupTests(unittest.TestCase):
                          v.OBJECTS)
 
     @patch('swiftsc.client.is_container', return_value=False)
-    def test_retrieve_backup_nonedata(self, _mock):
+    def test_retrieve_backup_nonedata(self, _mock1):
         """ unit test for retrieving backup none data list """
         self.assertEqual(self.bkup.retrieve_backup_data_list(),
                          [])
@@ -153,51 +153,51 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.delete_object', return_value=204)
-    def test_delete_backup_data(self, mock1, mock2, mock3):
+    def test_delete_backup_data(self, _mock1, _mock2, _mock3):
         """ unit test for delete object """
         self.assertEqual(self.bkup.delete_backup_data("dummy"), True)
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.delete_object', return_value=204)
-    def test_delete_multiple_backups(self, mock1, mock2, mock3):
+    def test_delete_multiple_backups(self, _mock1, _mock2, _mock3):
         """ unit test for delete multiple object """
         self.assertEqual(self.bkup.delete_backup_data(v.OBJECTS_NAME), None)
 
     @patch('swiftsc.client.is_container', return_value=False)
-    def test_delete_backups_nocontainer(self, _mock):
+    def test_delete_backups_nocontainer(self, _mock1):
         """ unit test for delete object without container """
         self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=False)
-    def test_delete_backups_noobject(self, mock1, mock2):
+    def test_delete_backups_noobject(self, _mock1, _mock2):
         """ unit test for delete backup data without object """
         self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.delete_object', return_value=False)
-    def test_delete_backups_failed(self, mock1, mock2, mock3):
+    def test_delete_backups_failed(self, _mock1, _mock2, _mock3):
         """ unit test for fail to delete object """
         self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.retrieve_object', return_value=(True, ''))
-    def test_retrieve_backup_data(self, mock1, mock2, mock3):
+    def test_retrieve_backup_data(self, _mock1, _mock2, _mock3):
         """ unit test for retrieving backup data """
         self.assertEqual(self.bkup.retrieve_backup_data("dummy"), None)
 
     @patch('swiftsc.client.is_container', return_value=False)
-    def test_retrieving_no_container(self, _mock):
+    def test_retrieving_no_container(self, _mock1):
         """ unit test for retrieving backup data without container """
         self.assertRaises(RuntimeError,
                           self.bkup.retrieve_backup_data, "dummy")
 
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=False)
-    def test_retrieve_backups_no_object(self, mock1, mock2):
+    def test_retrieve_backups_no_object(self, _mock1, _mock2):
         """ unit test for retrieving backup data without object """
         self.assertRaises(RuntimeError,
                           self.bkup.retrieve_backup_data, "dummy")
@@ -205,7 +205,7 @@ class BackupTests(unittest.TestCase):
     @patch('swiftsc.client.is_container', return_value=True)
     @patch('swiftsc.client.is_object', return_value=True)
     @patch('swiftsc.client.retrieve_object', return_value=(False, ''))
-    def test_retrieve_backup_data_fail(self, mock1, mock2, mock3):
+    def test_retrieve_backup_data_fail(self, _mock1, _mock2, _mock3):
         """ unit test for fail to retrieving backup data """
         self.assertRaises(RuntimeError,
                           self.bkup.retrieve_backup_data, "dummy")
