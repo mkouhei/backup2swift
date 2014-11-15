@@ -60,10 +60,7 @@ long_description = (
     open(os.path.join("docs", "TODO.rst")).read() +
     open(os.path.join("docs", "HISTORY.rst")).read())
 
-if sys.version_info > (2, 6) and sys.version_info < (2, 7):
-    requires = ['setuptools', 'swiftsc', 'argparse']
-elif sys.version_info > (2, 7):
-    requires = ['setuptools', 'swiftsc']
+requires = ['setuptools', 'swiftsc']
 
 setup(name='backup2swift',
       version=backup2swift.__version__,

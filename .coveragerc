@@ -1,0 +1,3 @@
+[run]
+include =
+        backup2swift/*
