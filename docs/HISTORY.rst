@@ -1,11 +1,17 @@
 History
 -------
 
+
+0.8.4 (2014-11-19)
+^^^^^^^^^^^^^^^^^^
+
+* Supported timeout option.
+
 0.8.3 (2014-11-16)
 ^^^^^^^^^^^^^^^^^^
 
-* Fixed #20 "rotate_limit" seems not to work
-* Unsupported Python3.2, PyPy
+* Fixed #20 "rotate_limit" seems not to work.
+* Unsupported Python3.2, PyPy.
 * Appended pass through tox from python setup.py test.
 * Integrated pylint, pychecker, pep8, flakes to Tox.
 * Fixed violation of pylint.
