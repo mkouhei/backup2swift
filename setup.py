@@ -67,7 +67,8 @@ long_description = (
     open(os.path.join("docs", "TODO.rst")).read() +
     open(os.path.join("docs", "HISTORY.rst")).read())
 
-requires = ['setuptools', 'swiftsc']
+requires = ['setuptools',
+            'swiftsc>=0.5.5']
 
 setup(name='backup2swift',
       version=backup2swift.__version__,

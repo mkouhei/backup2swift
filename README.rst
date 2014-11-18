@@ -16,8 +16,8 @@ It depends on a simple client library called swiftsc.
 Requirements
 ------------
 
-* Python 2.6 later or Python 3.2 later
-* swiftsc 0.5 later
+* Python 2.7 later or Python 3.3 later
+* swiftsc 0.5.5 later
 
 
 Setup
@@ -42,9 +42,14 @@ Firstly setup configuration file. You may save the file name of your choice as s
   auth_url: https://example.org/auth/v1.0
   username: username
   password: password
+  #ignore_verify_ssl_certification: True
+  #timeout: 5.0
 
   [backup]
   rotate_limit: 10
+
+  #[keystone]
+  #tenant_id: tenant_id
 
 The "auth_url" is swift authentication url, "username" and "password" are swift's. If you need to ignore verification of SSL certification, append option as "ignore_verify_ssl_certification: True" to [swift] section. "rotate_limit" is limitation count of rotation for backup. If this value is 3,  backup is as folloing;
 
