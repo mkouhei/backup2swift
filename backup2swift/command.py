@@ -97,14 +97,16 @@ def execute_swift_client(args):
     """
     config_file = check_config_file(args.config)
     (auth_url, username, password, rotate_limit,
-     verify, tenant_id) = config.check_config(config_file)
+     verify, timeout, tenant_id) = config.check_config(config_file)
     if args.container:
         container_name = args.container
     else:
         container_name = utils.FQDN
     bkup = backup.Backup(auth_url, username, password,
                          rotate_limit=rotate_limit,
-                         verify=verify, tenant_id=tenant_id,
+                         verify=verify,
+                         timeout=timeout,
+                         tenant_id=tenant_id,
                          container_name=container_name)
     if args.list:
         # listing backup data

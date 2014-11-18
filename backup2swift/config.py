@@ -22,6 +22,10 @@ elif sys.version_info > (3, 0):
     import configparser
 from backup2swift import utils
 
+#: connection timeout
+#: see also http://goo.gl/6KIJnc
+TIMEOUT = 5.000
+
 
 def check_config(filename):
     """Check configuration file of backup2swift
@@ -55,6 +59,12 @@ def check_config(filename):
             verify = True
     except (configparser.NoSectionError, configparser.NoOptionError):
         verify = True
+
+    try:
+        timeout = float(conf.get('swift', 'timeout'))
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        timeout = TIMEOUT
+
     try:
         if conf.get('keystone', 'tenant_id'):
             tenant_id = conf.get('keystone', 'tenant_id')
@@ -63,4 +73,5 @@ def check_config(filename):
     except (configparser.NoSectionError, configparser.NoOptionError):
         tenant_id = None
 
-    return auth_url, username, password, rotate_limit, verify, tenant_id
+    return (auth_url, username, password, rotate_limit,
+            verify, timeout, tenant_id)

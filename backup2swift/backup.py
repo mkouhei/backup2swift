@@ -50,10 +50,8 @@ class Backup(object):
         else:
             self.verify = True
 
-        if kwargs.get('tenant_id'):
-            tenant_id = kwargs.get('tenant_id')
-        else:
-            tenant_id = None
+        self.timeout = lambda: kwargs.get('timeout')
+        tenant_id = lambda: kwargs.get('tenant_id')
 
         if kwargs.get('container_name'):
             container_name = kwargs.get('container_name')
@@ -64,7 +62,8 @@ class Backup(object):
          self.storage_url) = client.retrieve_token(auth_url,
                                                    username,
                                                    password,
-                                                   tenant_id,
+                                                   tenant_id(),
+                                                   timeout=self.timeout(),
                                                    verify=self.verify)
         if isinstance(rotate_limit, str):
             self.rotate_limit = int(rotate_limit)
@@ -97,11 +96,14 @@ class Backup(object):
         """
         object_name = os.path.basename(filename)
         if not client.is_container(self.token, self.storage_url,
-                                   self.container_name, verify=self.verify):
+                                   self.container_name,
+                                   timeout=self.timeout(),
+                                   verify=self.verify):
             # False is no container
             status_code = client.create_container(self.token,
                                                   self.storage_url,
                                                   self.container_name,
+                                                  timeout=self.timeout(),
                                                   verify=self.verify)
             if not (status_code == 201 or status_code == 202):
                 # 201; Created, 202; Accepted
@@ -112,6 +114,7 @@ class Backup(object):
                         client.list_objects(self.token,
                                             self.storage_url,
                                             self.container_name,
+                                            timeout=self.timeout(),
                                             verify=self.verify)]
 
         if filename and data:
@@ -127,6 +130,7 @@ class Backup(object):
                                                self.container_name,
                                                filename,
                                                object_name=object_name,
+                                               timeout=self.timeout(),
                                                verify=self.verify)
             if not (status_code == 201 or status_code == 202):
                 raise RuntimeError('Failed to create the object "%s"'
@@ -146,7 +150,9 @@ class Backup(object):
         new_object_name = object_name + '_' + timestamp
         status_code = client.copy_object(self.token, self.storage_url,
                                          self.container_name, object_name,
-                                         new_object_name, verify=self.verify)
+                                         new_object_name,
+                                         timeout=self.timeout(),
+                                         verify=self.verify)
         if status_code != 201:
             raise RuntimeError('Failed to copy object "%s"' % new_object_name)
 
@@ -154,6 +160,7 @@ class Backup(object):
         status_code = client.create_object(self.token, self.storage_url,
                                            self.container_name, filename,
                                            object_name=object_name,
+                                           timeout=self.timeout(),
                                            verify=self.verify)
         if status_code != 201:
             raise RuntimeError('Failed to create the object "%s"'
@@ -165,7 +172,9 @@ class Backup(object):
         archive_list.reverse()
         [utils.multiprocess(client.delete_object, self.token,
                             self.storage_url, self.container_name,
-                            obj, verify=self.verify)
+                            obj,
+                            timeout=self.timeout(),
+                            verify=self.verify)
          for i, obj in enumerate(archive_list)
          if i + 1 > self.rotate_limit - 1]
         return True
@@ -177,19 +186,23 @@ class Backup(object):
             verbose: boolean flag of listing objects
         """
         if not client.is_container(self.token, self.storage_url,
-                                   self.container_name, verify=self.verify):
+                                   self.container_name,
+                                   timeout=self.timeout(),
+                                   verify=self.verify):
             return []
 
         if verbose:
             backup_l = [i for i in client.list_objects(self.token,
                                                        self.storage_url,
                                                        self.container_name,
+                                                       timeout=self.timeout(),
                                                        verify=self.verify)]
         else:
             backup_l = [i.get('name') for i
                         in client.list_objects(self.token,
                                                self.storage_url,
                                                self.container_name,
+                                               timeout=self.timeout(),
                                                verify=self.verify)]
         return backup_l
 
@@ -205,15 +218,20 @@ class Backup(object):
             [utils.multiprocess(self.retrieve_backup_data, obj)
              for obj in object_name]
         elif (client.is_container(self.token, self.storage_url,
-                                  self.container_name, verify=self.verify) and
+                                  self.container_name,
+                                  timeout=self.timeout(),
+                                  verify=self.verify) and
               client.is_object(self.token, self.storage_url,
                                self.container_name, object_name,
+                               timeout=self.timeout(),
                                verify=self.verify)):
-            status_code, content = client.retrieve_object(self.token,
-                                                          self.storage_url,
-                                                          self.container_name,
-                                                          object_name,
-                                                          verify=self.verify)
+            (status_code,
+             content) = client.retrieve_object(self.token,
+                                               self.storage_url,
+                                               self.container_name,
+                                               object_name,
+                                               timeout=self.timeout(),
+                                               verify=self.verify)
             if not status_code:
                 raise RuntimeError('Failed to retrieve the object "%s"'
                                    % object_name)
@@ -245,14 +263,18 @@ class Backup(object):
             [self.delete_backup_data(obj) for obj in object_name]
 
         elif (client.is_container(self.token, self.storage_url,
-                                  self.container_name, verify=self.verify) and
+                                  self.container_name,
+                                  timeout=self.timeout(),
+                                  verify=self.verify) and
               client.is_object(self.token, self.storage_url,
                                self.container_name, object_name,
+                               timeout=self.timeout(),
                                verify=self.verify)):
             status_code = client.delete_object(self.token,
                                                self.storage_url,
                                                self.container_name,
                                                object_name,
+                                               timeout=self.timeout(),
                                                verify=self.verify)
             if not status_code == 204:
                 raise RuntimeError('Failed to delete the object "%s"'
