@@ -48,7 +48,7 @@ def check_config(filename):
         auth_url = conf.get('swift', 'auth_url')
         username = conf.get('swift', 'username')
         password = conf.get('swift', 'password')
-        rotate_limit = conf.get('backup', 'rotate_limit')
+        rotate_limit = int(conf.get('backup', 'rotate_limit'))
     except (configparser.NoSectionError, configparser.NoOptionError) as error:
         # syslog.ERR is 3
         utils.logging(3, error)
