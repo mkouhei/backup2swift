@@ -16,196 +16,397 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-from mock import patch
+import json
+import os
+from datetime import datetime
+import httpretty
+from httpretty import HTTPretty, httprettified
 from backup2swift import backup as bkup
 from backup2swift.tests import test_vars as v
+
+
+def timestamp():
+    """ timestamp for ratation """
+    return datetime.now().strftime('%Y%m%d-%H%M%S')
+
+
+def dest_obj(name):
+    """ dest object name for copy """
+    return '%s_%s' % (name, timestamp())
 
 
 class BackupTests(unittest.TestCase):
     """ test module of backup """
 
-    @patch('swiftsc.client.retrieve_token', return_value=(v.TOKEN, v.S_URL))
-    def setUp(self, _mock1):
+    @httprettified
+    def setUp(self):
         """ initialize """
-        self.bkup = bkup.Backup(v.AUTH_URL, v.USERNAME, v.PASSWORD)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               v.AUTH_URL,
+                               adding_headers={
+                                   'X-Auth-Token': v.TOKEN,
+                                   'X-Storage-URL': v.STORAGE_URL})
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup(self, _mock1, _mock2, _mock3):
-        """ unit test for backup """
-        self.assertEqual(self.bkup.backup("."), True)
+        self.bkup = bkup.Backup(v.AUTH_URL,
+                                v.USERNAME,
+                                v.PASSWORD,
+                                container_name=v.CONTAINER_NAME)
 
-    @patch('swiftsc.client.is_container', return_value=False)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_multiple_files(self, _mock1, _mock2, _mock3):
-        """ unit test for backup multiple files """
-        self.assertEqual(self.bkup.backup(v.TEST_FILES), True)
+    def tearDown(self):
+        if os.path.isfile(v.OBJECT_NAME):
+            os.remove(v.OBJECT_NAME)
+        httpretty.disable()
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=201)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_create_cont(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for create container and backup file """
-        self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
+    @httprettified
+    def test_backup(self):
+        """ unit test backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        dest_file = '%s_%s' % (v.OBJECT_NAME, timestamp())
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             dest_file),
+                               status=201)
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=201)
+        self.assertTrue(
+            self.bkup.backup("backup2swift/tests/data/%s" % v.OBJECT_NAME))
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=202)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_created_cont(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for backup file to existed contianer """
-        self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
+    @httprettified
+    def test_backup_multiple_files(self):
+        """ unit test for backup multiple files, but not work backup_file
+        why utils.multiprocess has no multiprocessing.Process.join().
+        """
+        self.assertEqual(self.bkup.backup(v.TEST_FILES), None)
 
-    @patch('swiftsc.client.is_container', return_value=False)
-    @patch('swiftsc.client.create_container', return_value=400)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_failed_create_cont(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for backup file when failed to create contianer """
+    @httprettified
+    def test_backup_with_new_container(self):
+        """ unit test backup and create container """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=404)
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=201)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               body=json.dumps([]),
+                               status=200)
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=201)
+        self.assertTrue(
+            self.bkup.backup("backup2swift/tests/data/%s" % v.OBJECT_NAME))
+
+    @httprettified
+    def test_fail_create_container(self):
+        """ unit test fail create container """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=404)
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=400)
         self.assertRaises(RuntimeError,
-                          self.bkup.backup_file,
-                          "examples/bu2sw.conf")
+                          self.bkup.backup,
+                          "backup2swift/tests/data/%s" % v.OBJECT_NAME)
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=202)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_file_create_object(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for backup file and create object """
-        self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=202)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=201)
-    def test_backup_creating_from_stdin(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for backup file and create object form stdin """
-        test_data = open("examples/bu2sw.conf", 'rb', buffering=0)
-        self.assertEqual(self.bkup.backup_file("bu2sw.conf",
-                                               test_data), True)
-        test_data.close()
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=201)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=202)
-    def test_backup_file_override(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for backup file and override object  """
-        self.assertEqual(self.bkup.backup_file("examples/bu2sw.conf"), True)
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.create_container', return_value=201)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    @patch('swiftsc.client.create_object', return_value=400)
-    def test_backup_file_fail(self, _mock1, _mock2, _mock3, _mock4):
-        """ unit test for fail backup file """
-        self.assertRaises(RuntimeError, self.bkup.backup_file,
-                          "examples/bu2sw.conf")
-
-    @patch('swiftsc.client.copy_object', return_value=201)
-    @patch('swiftsc.client.create_object', return_value=201)
-    @patch('swiftsc.client.delete_object', return_value=204)
-    def test_rotate(self, _mock1, _mock2, _mock3):
-        """ unit test for rotate object """
-        self.assertEqual(self.bkup.rotate(v.TEST_FILE, v.OBJECT_NAME,
-                                          v.OBJECTS_NAME_L), True)
-
-    @patch('swiftsc.client.copy_object', return_value=400)
-    def test_rotate_fail_copy(self, _mock1):
-        """ unit test for fail to copy object """
-        self.assertRaises(RuntimeError, self.bkup.rotate,
-                          v.TEST_FILE, v.OBJECT_NAME, v.OBJECTS_NAME_L)
-
-    @patch('swiftsc.client.copy_object', return_value=201)
-    @patch('swiftsc.client.create_object', return_value=400)
-    def test_rotate_fail_create(self, _mock1, _mock2):
-        """ unit test for fail to rotate """
-        self.assertRaises(RuntimeError, self.bkup.rotate, v.TEST_FILE,
-                          v.OBJECT_NAME, v.OBJECTS_NAME_L)
-
-    # ToDo should add raise exception when delete object?
-    @patch('swiftsc.client.copy_object', return_value=201)
-    @patch('swiftsc.client.create_object', return_value=201)
-    @patch('swiftsc.client.delete_object', return_value=400)
-    def test_rotate_fail_delete(self, _mock1, _mock2, _mock3):
-        """ unit test for fail to delete """
-        self.assertEqual(self.bkup.rotate(v.TEST_FILE, v.OBJECT_NAME,
-                                          v.OBJECTS_NAME_L), True)
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.list_objects', return_value=v.OBJECTS)
-    def test_retrieve_backup_data_list(self, _mock1, _mock2):
-        """ unit test for retrieving backup data list """
-        self.assertEqual(self.bkup.retrieve_backup_data_list(),
-                         v.OBJECTS_NAME_L)
-        self.assertEqual(self.bkup.retrieve_backup_data_list(True),
-                         v.OBJECTS)
-
-    @patch('swiftsc.client.is_container', return_value=False)
-    def test_retrieve_backup_nonedata(self, _mock1):
-        """ unit test for retrieving backup none data list """
-        self.assertEqual(self.bkup.retrieve_backup_data_list(),
-                         [])
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=True)
-    @patch('swiftsc.client.delete_object', return_value=204)
-    def test_delete_backup_data(self, _mock1, _mock2, _mock3):
-        """ unit test for delete object """
-        self.assertEqual(self.bkup.delete_backup_data("dummy"), True)
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=True)
-    @patch('swiftsc.client.delete_object', return_value=204)
-    def test_delete_multiple_backups(self, _mock1, _mock2, _mock3):
-        """ unit test for delete multiple object """
-        self.assertEqual(self.bkup.delete_backup_data(v.OBJECTS_NAME), None)
-
-    @patch('swiftsc.client.is_container', return_value=False)
-    def test_delete_backups_nocontainer(self, _mock1):
-        """ unit test for delete object without container """
-        self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=False)
-    def test_delete_backups_noobject(self, _mock1, _mock2):
-        """ unit test for delete backup data without object """
-        self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=True)
-    @patch('swiftsc.client.delete_object', return_value=False)
-    def test_delete_backups_failed(self, _mock1, _mock2, _mock3):
-        """ unit test for fail to delete object """
-        self.assertRaises(RuntimeError, self.bkup.delete_backup_data, "dummy")
-
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=True)
-    @patch('swiftsc.client.retrieve_object', return_value=(True, ''))
-    def test_retrieve_backup_data(self, _mock1, _mock2, _mock3):
-        """ unit test for retrieving backup data """
-        self.assertEqual(self.bkup.retrieve_backup_data("dummy"), None)
-
-    @patch('swiftsc.client.is_container', return_value=False)
-    def test_retrieving_no_container(self, _mock1):
-        """ unit test for retrieving backup data without container """
+    @httprettified
+    def test_fail_copy(self):
+        """ unit test fail copy backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        dest_file = '%s_%s' % (v.OBJECT_NAME, timestamp())
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             dest_file),
+                               status=400)
         self.assertRaises(RuntimeError,
-                          self.bkup.retrieve_backup_data, "dummy")
+                          self.bkup.backup,
+                          "backup2swift/tests/data/%s" % v.OBJECT_NAME)
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=False)
-    def test_retrieve_backups_no_object(self, _mock1, _mock2):
-        """ unit test for retrieving backup data without object """
+    @httprettified
+    def test_fail_rotate(self):
+        """ unit test fail rotate backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        dest_file = '%s_%s' % (v.OBJECT_NAME, timestamp())
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             dest_file),
+                               status=201)
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=400)
         self.assertRaises(RuntimeError,
-                          self.bkup.retrieve_backup_data, "dummy")
+                          self.bkup.backup,
+                          "backup2swift/tests/data/%s" % v.OBJECT_NAME)
 
-    @patch('swiftsc.client.is_container', return_value=True)
-    @patch('swiftsc.client.is_object', return_value=True)
-    @patch('swiftsc.client.retrieve_object', return_value=(False, ''))
-    def test_retrieve_backup_data_fail(self, _mock1, _mock2, _mock3):
-        """ unit test for fail to retrieving backup data """
+    @httprettified
+    def test_delete_backup(self):
+        """ unit test delete backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.DELETE,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        self.assertTrue(self.bkup.delete_backup_data(v.OBJECT_NAME))
+
+    @httprettified
+    def test_fail_delete_backup(self):
+        """ unit test fail delete backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.DELETE,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=400)
         self.assertRaises(RuntimeError,
-                          self.bkup.retrieve_backup_data, "dummy")
+                          self.bkup.delete_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_delete_multiple_backup(self):
+        """ unit test delete multiple backup """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        for i in v.OBJECTS_NAME:
+            HTTPretty.register_uri(HTTPretty.HEAD,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=204)
+            HTTPretty.register_uri(HTTPretty.DELETE,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=400)
+        self.assertTrue(self.bkup.delete_backup_data, v.OBJECTS_NAME)
+
+    @httprettified
+    def test_delete_object_no_container(self):
+        """ unit test delete no container """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=404)
+        self.assertRaises(RuntimeError,
+                          self.bkup.delete_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_delete_noexist_backup(self):
+        """ unit test delete no object """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=404)
+        self.assertRaises(RuntimeError,
+                          self.bkup.delete_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_fail_delete_multiple(self):
+        """ unit test fail delete multiple objects """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        for i in v.OBJECTS_NAME:
+            HTTPretty.register_uri(HTTPretty.HEAD,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=204)
+            HTTPretty.register_uri(HTTPretty.DELETE,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=400)
+        self.assertRaises(RuntimeError,
+                          self.bkup.delete_backup_data,
+                          v.OBJECTS_NAME)
+
+    @httprettified
+    def test_retrieve_backup_data(self):
+        """ unit test retrieve a object """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=200)
+        self.assertTrue(self.bkup.retrieve_backup_data(v.OBJECT_NAME))
+
+    @httprettified
+    def test_retrieve_with_filename(self):
+        """ unit test retrieve a object with filename """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=200)
+        self.assertTrue(self.bkup.retrieve_backup_data(v.OBJECT_NAME,
+                                                       v.OBJECT_NAME))
+
+    @httprettified
+    def test_retrieve_no_container(self):
+        """ unit test retrieve a object no container """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=404)
+        self.assertRaises(RuntimeError,
+                          self.bkup.retrieve_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_retrieve_backup_nodata(self):
+        """ unit test retrieve no object """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=404)
+        self.assertRaises(RuntimeError,
+                          self.bkup.retrieve_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_retrieve_fail_backup_data(self):
+        """ unit test fail retrieve a object """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=400)
+        self.assertRaises(RuntimeError,
+                          self.bkup.retrieve_backup_data,
+                          v.OBJECT_NAME)
+
+    @httprettified
+    def test_retrieve_multiple_backup(self):
+        """ unit test retrieve multiple objects """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps(v.OBJECTS))
+        for i in v.OBJECTS_NAME:
+            HTTPretty.register_uri(HTTPretty.HEAD,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=204)
+            HTTPretty.register_uri(HTTPretty.GET,
+                                   '%s/%s/%s' % (v.STORAGE_URL,
+                                                 v.CONTAINER_NAME,
+                                                 i),
+                                   status=200)
+        self.assertTrue(self.bkup.delete_backup_data, v.OBJECTS_NAME)
