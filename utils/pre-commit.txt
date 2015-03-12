@@ -1,7 +1,8 @@
 #!/bin/sh -e
+rootdir=$(git rev-parse --show-toplevel)
 (
-cd $(git rev-parse --show-toplevel)
-find backup2swift -name '*.pyc' -delete
-python setup.py test || exit 1
+cd $rootdir
+find ./ -name '*.pyc' -delete
+tox
 python setup.py check -r || exit 1
 )

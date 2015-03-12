@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Copyright (C) 2013, 2014 Kouhei Maeda <mkouhei@palmtb.net>
+    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,9 +56,9 @@ classifiers = [
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Software Development :: Libraries :: Python Modules",
     "Environment :: OpenStack",
 ]
 
@@ -68,7 +68,10 @@ long_description = (
     open(os.path.join("docs", "HISTORY.rst")).read())
 
 requires = ['setuptools',
-            'swiftsc>=0.5.5']
+            'swiftsc>=0.6.2']
+
+with open('requirements.txt', 'w') as fobj:
+    fobj.write('\n'.join(requires))
 
 setup(name='backup2swift',
       version=backup2swift.__version__,

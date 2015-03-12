@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Copyright (C) 2013, 2014 Kouhei Maeda <mkouhei@palmtb.net>
+    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ def check_config(filename):
         auth_url = conf.get('swift', 'auth_url')
         username = conf.get('swift', 'username')
         password = conf.get('swift', 'password')
-        rotate_limit = conf.get('backup', 'rotate_limit')
+        rotate_limit = int(conf.get('backup', 'rotate_limit'))
     except (configparser.NoSectionError, configparser.NoOptionError) as error:
         # syslog.ERR is 3
         utils.logging(3, error)
