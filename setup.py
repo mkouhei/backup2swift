@@ -70,6 +70,9 @@ long_description = (
 requires = ['setuptools',
             'swiftsc>=0.5.5']
 
+with open('requirements.txt', 'w') as fobj:
+    fobj.write('\n'.join(requires))
+
 setup(name='backup2swift',
       version=backup2swift.__version__,
       description='Backup data to OpenStack Swift',

@@ -9,4 +9,4 @@ dist/
 .coverage
 .cache
 htmlcov
-dummy
+requirements.txt
