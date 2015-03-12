@@ -1,6 +1,15 @@
 History
 -------
 
+0.9.0 (2015-03-12)
+^^^^^^^^^^^^^^^^^^
+
+* Changed using swiftsc.Client().
+
+  * This is supported swiftsc >= 0.6.0.
+
+* Supported PyPy.
+* Fixed some issues.
 
 0.8.4 (2014-11-19)
 ^^^^^^^^^^^^^^^^^^
