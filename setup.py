@@ -59,7 +59,6 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
     "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Software Development :: Libraries :: Python Modules",
     "Environment :: OpenStack",
 ]
 
