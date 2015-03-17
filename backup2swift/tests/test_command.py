@@ -28,6 +28,8 @@ class CommandTests(unittest.TestCase):
         """ finalize """
         sys.stdout = self.capture
         sys.stderr = self.capture_err
+        if os.path.isfile('dummy'):
+            os.remove('dummy')
 
     def test_check_config_file(self):
         """ unit test for check_config_file """
