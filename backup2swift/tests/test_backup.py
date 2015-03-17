@@ -67,6 +67,26 @@ class BackupTests(unittest.TestCase):
             self.bkup.backup("backup2swift/tests/data/%s" % v.OBJECT_NAME))
 
     @httprettified
+    def test_backup_from_stdin(self):
+        """ unit test backup from stdin """
+        HTTPretty.register_uri(HTTPretty.HEAD,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=204)
+        HTTPretty.register_uri(HTTPretty.GET,
+                               '%s/%s' % (v.STORAGE_URL, v.CONTAINER_NAME),
+                               status=200,
+                               body=json.dumps([]))
+        HTTPretty.register_uri(HTTPretty.PUT,
+                               '%s/%s/%s' % (v.STORAGE_URL,
+                                             v.CONTAINER_NAME,
+                                             v.OBJECT_NAME),
+                               status=201)
+        data = open("backup2swift/tests/data/sample.txt", "rb", buffering=0)
+        self.assertTrue(
+            self.bkup.backup_file(v.OBJECT_NAME, data))
+        data.close()
+
+    @httprettified
     def test_backup_multiple_files(self):
         """ unit test for backup multiple files, but not work backup_file
         why utils.multiprocess has no multiprocessing.Process.join().

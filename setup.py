@@ -68,7 +68,7 @@ long_description = (
     open(os.path.join("docs", "HISTORY.rst")).read())
 
 requires = ['setuptools',
-            'swiftsc>=0.6.2']
+            'swiftsc>=0.6.3']
 
 with open('requirements.txt', 'w') as fobj:
     fobj.write('\n'.join(requires))
