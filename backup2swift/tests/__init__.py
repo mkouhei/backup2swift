@@ -1,1 +1,1 @@
-""" test modules for backup2swift """
+"""test modules for backup2swift."""

@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
+"""backup2swift.utils module.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import syslog
 import multiprocessing
@@ -24,7 +25,7 @@ FQDN = socket.getfqdn()
 
 
 def logging(priority, message):
-    """
+    """Logging.
 
     Arguments:
         priority: syslog priority
@@ -38,7 +39,7 @@ def logging(priority, message):
 
 
 def list_data(data):
-    """
+    """Listing data.
 
     Argument:
         data: list of data
@@ -52,7 +53,7 @@ def list_data(data):
 
 
 def pretty_print(header, rows):
-    """
+    """Pretty printing.
 
     Arguments:
         header: list of header data
@@ -75,7 +76,7 @@ def pretty_print(header, rows):
 
 
 def get_columns_width(columns_width, header, rows):
-    """
+    """Get columns width.
 
     Arguments:
         columns_width: list of columns string length
@@ -93,7 +94,7 @@ def get_columns_width(columns_width, header, rows):
 
 
 def print_header(columns_width, header):
-    """
+    """Print header.
 
     Arguments:
         columns_width: list of columns string length
@@ -109,7 +110,7 @@ def print_header(columns_width, header):
 
 
 def print_footer(columns_width):
-    """
+    """Print footer.
 
     Argument:
         columns_width: list of columns string length
@@ -121,7 +122,7 @@ def print_footer(columns_width):
 
 
 def generate_row_s(row, columns_width, header=None):
-    """
+    """Generate row strings.
 
     Arguments:
         row:           data of row
@@ -146,6 +147,6 @@ def generate_row_s(row, columns_width, header=None):
 
 
 def multiprocess(func, *args, **kwargs):
-    """ multiprocessing for backup / delete object / retrieve object. """
+    """multiprocessing for backup / delete object / retrieve object."""
     proc = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
     proc.start()

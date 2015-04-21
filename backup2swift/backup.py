@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
+"""backup2swift.backup module.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os.path
 import glob
@@ -26,7 +27,9 @@ ROTATE_LIMIT = 10
 
 
 class Backup(object):
-    """
+
+    """Backup class.
+
     Arguments:
         auth_url:       authentication url of swift
         username:       username for swift
@@ -38,6 +41,7 @@ class Backup(object):
     """
 
     def __init__(self, *args, **kwargs):
+        """Initialize Backup object."""
         self.client = Client(auth_uri=args[0],
                              username=args[1],
                              password=args[2],
@@ -57,7 +61,7 @@ class Backup(object):
         self.client.containers.container(self.container_name)
 
     def backup(self, target_path):
-        """
+        """Base Backup method.
 
         Argument:
             target_path: path of backup target file or directory
@@ -76,7 +80,7 @@ class Backup(object):
             return False
 
     def backup_file(self, filename, data=None):
-        """
+        """Backup file.
 
         Argument:
             filename: path of backup target file
@@ -110,7 +114,7 @@ class Backup(object):
         return True
 
     def rotate(self, filename, object_name, objects_list):
-        """
+        """Rotate data.
 
         Arguments:
             filename:     filename of backup target
@@ -144,7 +148,7 @@ class Backup(object):
         return True
 
     def retrieve_backup_data_list(self, verbose=False):
-        """
+        """Retrieve the list of backup data.
 
         Argument:
             verbose: boolean flag of listing objects
@@ -160,7 +164,7 @@ class Backup(object):
         return objects
 
     def retrieve_backup_data(self, object_name, output_filepath=None):
-        """
+        """Retrieve backup data.
 
         Argument:
             object_name: delete target object name
@@ -196,7 +200,7 @@ class Backup(object):
             raise RuntimeError('No such object "%s"' % object_name)
 
     def delete_backup_data(self, object_name):
-        """
+        """Delete backup data.
 
         Argument:
             object_name: delete target object name
