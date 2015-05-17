@@ -38,7 +38,8 @@ class CommandTests(unittest.TestCase):
 
     def test_check_config_file_fail(self):
         """ unit test for check_config_file fail case """
-        if not os.path.isfile(os.path.join(os.environ['HOME'], '.bu2sw.conf')):
+        if not os.path.isfile(os.path.join(os.path.expanduser('~'),
+                                           '.bu2sw.conf')):
             self.assertRaises(IOError, c.check_config_file, None)
 
     def test_parse_options(self):

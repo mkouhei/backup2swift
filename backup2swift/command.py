@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
-    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
+"""backup2swift.command module.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import argparse
 import os
@@ -25,7 +26,7 @@ DEFAULT_CONF = '.bu2sw.conf'
 
 
 def parse_options():
-    """ setup options. """
+    """setup options."""
     parser = argparse.ArgumentParser(description='usage')
     setoption(parser, 'version')
     setoption(parser, 'config')
@@ -36,7 +37,8 @@ def parse_options():
 
 
 def setoption(parser, keyword):
-    """
+    """Set option of argument parser.
+
     Arguments:
         parser: object of argparse
         keyword: switching keyword
@@ -72,7 +74,7 @@ def setoption(parser, keyword):
 
 
 def check_config_file(args_config):
-    """
+    """Check configuration file.
 
     Argument:
         args_config: args.config
@@ -80,9 +82,9 @@ def check_config_file(args_config):
     if args_config:
         # override configuration file path
         config_file = args_config
-    elif os.path.isfile(os.path.join(os.environ['HOME'], DEFAULT_CONF)):
+    elif os.path.isfile(os.path.join(os.path.expanduser('~'), DEFAULT_CONF)):
         # use default configuration file
-        config_file = os.path.join(os.environ['HOME'], DEFAULT_CONF)
+        config_file = os.path.join(os.path.expanduser('~'), DEFAULT_CONF)
     else:
         raise IOError(('Setup "~/.bu2sw.conf" or '
                        'specify configuration file with "-c" option'))
@@ -90,7 +92,7 @@ def check_config_file(args_config):
 
 
 def execute_swift_client(args):
-    """
+    """Execute swift client.
 
     Argument:
         args: argument object
@@ -132,7 +134,7 @@ def execute_swift_client(args):
 
 
 def main():
-    """ main function """
+    """main function."""
     try:
         args = parse_options()
         args.func(args)

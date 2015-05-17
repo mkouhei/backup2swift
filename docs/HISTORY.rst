@@ -1,6 +1,14 @@
 History
 -------
 
+0.9.2 (2015-05-17)
+^^^^^^^^^^^^^^^^^^
+
+* Changes os.environ['HOME'] to os.expanduser('~').
+* Changes httpretty to requests_mock.
+* Supports wheel.
+* Applies pep257 and fixes the violations.
+
 0.9.1 (2015-03-17)
 ^^^^^^^^^^^^^^^^^^
 
