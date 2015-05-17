@@ -6,32 +6,27 @@ This utility is used to backup data to OpenStack Swift.
 It provides a command interface and backup rotation.
 It depends on a simple client library called swiftsc.
 
-.. image:: https://secure.travis-ci.org/mkouhei/backup2swift.png?branch=devel
+.. image:: https://secure.travis-ci.org/mkouhei/backup2swift.png?branch=master
    :target: http://travis-ci.org/mkouhei/backup2swift
-.. image:: https://coveralls.io/repos/mkouhei/backup2swift/badge.png?branch=devel
-   :target: https://coveralls.io/r/mkouhei/backup2swift?branch=devel
-.. image:: https://pypip.in/v/backup2swift/badge.png
-   :target: https://crate.io/packages/backup2swift
+.. image:: https://coveralls.io/repos/mkouhei/backup2swift/badge.png?branch=master
+   :target: https://coveralls.io/r/mkouhei/backup2swift?branch=master
+.. image:: https://img.shields.io/pypi/v/backup2swift.svg
+   :target: https://pypi.python.org/pypi/backup2swift
 
 Requirements
 ------------
 
 * Python 2.7 later or Python 3.3 later
-* swiftsc 0.5.5 later
+* swiftsc 0.6.3 later
 
 
 Setup
 -----
 ::
 
-   $ git clone https://github.com/mkouhei/backup2swift
-   $ cd backup2swift
-   $ sudo python setup.py install
-
-or via PyPI::
-
-  $ virtualenv --no-site-packages venv
-  $ pip install backup2swift
+   $ pip install --user backup2swift
+   or
+   (venv)$ pip install backup2swift
 
 Usage
 -----
@@ -84,20 +79,6 @@ Backup objects named with timestamp are created until "rotate_limit" value. Old 
    example.txt_20130510-114110
 
 See also man manual of bu2sw(1).
-
-Contribute
-----------
-
-Firstly copy pre-commit hook script.::
-
-   $ cp -f utils/pre-commit.txt .git/hooks/pre-commit
-
-Next install python2.6 later, and python-swiftsc, py.test. Below in Debian GNU/Linux Sid system,::
-
-   $ sudo apt-get install python python-swiftsc python-pytest pep8
-
-Then checkout 'devel' branch for development, commit your changes. Before pull request, execute git rebase.
-
 
 See also
 --------
