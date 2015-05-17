@@ -69,9 +69,17 @@ long_description = (
 
 requires = ['setuptools',
             'swiftsc>=0.6.3']
+extras_require = {
+    'reST': ['Sphinx']}
+
+if os.environ.get('READTHEDOCS', None):
+    extras_require['reST'].append('recommonmark')
 
 with open('requirements.txt', 'w') as fobj:
     fobj.write('\n'.join(requires))
+
+with open('extras_requirement.txt', 'w') as fobj:
+    fobj.write('\n'.join(extras_require.get('reST')))
 
 setup(name='backup2swift',
       version=backup2swift.__version__,
@@ -87,6 +95,7 @@ setup(name='backup2swift',
                    ['examples/bu2sw.conf',
                     'examples/bu2sw_ignore_verify.conf'])],
       install_requires=requires,
+      extras_require=extras_require,
       tests_require=['tox'],
       cmdclass={'test': Tox},
       entry_points={
