@@ -82,9 +82,9 @@ def check_config_file(args_config):
     if args_config:
         # override configuration file path
         config_file = args_config
-    elif os.path.isfile(os.path.join(os.environ['HOME'], DEFAULT_CONF)):
+    elif os.path.isfile(os.path.join(os.path.expanduser('~'), DEFAULT_CONF)):
         # use default configuration file
-        config_file = os.path.join(os.environ['HOME'], DEFAULT_CONF)
+        config_file = os.path.join(os.path.expanduser('~'), DEFAULT_CONF)
     else:
         raise IOError(('Setup "~/.bu2sw.conf" or '
                        'specify configuration file with "-c" option'))
