@@ -46,6 +46,11 @@ class Tox(TestCommand):
         sys.exit(errno)
 
 
+def read_content(filepath):
+    with open(filepath) as fobj:
+        return fobj.read()
+
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -63,9 +68,9 @@ classifiers = [
 ]
 
 long_description = (
-    open("README.rst").read() +
-    open(os.path.join("docs", "TODO.rst")).read() +
-    open(os.path.join("docs", "HISTORY.rst")).read())
+    read_content("README.rst") +
+    read_content(os.path.join("docs", "TODO.rst")) +
+    read_content(os.path.join("docs", "HISTORY.rst")))
 
 requires = ['setuptools',
             'swiftsc>=0.6.3']
