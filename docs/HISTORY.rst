@@ -1,6 +1,13 @@
 History
 -------
 
+0.9.3 (2015-08-31)
+^^^^^^^^^^^^^^^^^^
+
+* Change dependency swiftsc version (Supports Identity API v3).
+* Supports Python 3.5 (3.5.0-rc2).
+* Fixes requests-mock package name.
+
 0.9.2 (2015-05-17)
 ^^^^^^^^^^^^^^^^^^
 
