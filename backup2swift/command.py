@@ -20,6 +20,7 @@ import argparse
 import os
 import os.path
 import sys
+from swiftsc.exception import AuthenticationError
 from backup2swift import __version__, backup, utils, config
 
 DEFAULT_CONF = '.bu2sw.conf'
@@ -138,7 +139,7 @@ def main():
     try:
         args = parse_options()
         args.func(args)
-    except (RuntimeError, IOError) as error:
+    except (RuntimeError, IOError, AuthenticationError) as error:
         # syslog.ERR is 3
         utils.logging(3, error)
 

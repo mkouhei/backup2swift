@@ -74,7 +74,7 @@ long_description = (
     read_content(os.path.join("docs", "HISTORY.rst")))
 
 requires = ['setuptools',
-            'swiftsc>=0.7.0']
+            'swiftsc>=0.7.1']
 extras_require = {
     'reST': ['Sphinx']}
 
