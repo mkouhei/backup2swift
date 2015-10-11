@@ -27,7 +27,6 @@ ROTATE_LIMIT = 10
 
 
 class Backup(object):
-
     """Backup class.
 
     Arguments:
