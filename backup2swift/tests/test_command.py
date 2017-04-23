@@ -4,13 +4,13 @@ import unittest
 import os
 import argparse
 import sys
+from backup2swift import __version__
+from backup2swift import command as c
+from backup2swift.tests import test_vars as v
 if sys.version_info < (3, 0):
     from StringIO import StringIO
 else:
     from io import StringIO
-from backup2swift import __version__
-from backup2swift import command as c
-from backup2swift.tests import test_vars as v
 
 
 class CommandTests(unittest.TestCase):

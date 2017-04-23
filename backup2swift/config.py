@@ -17,11 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
+from backup2swift import utils
 if sys.version_info > (2, 6) and sys.version_info < (2, 8):
     import ConfigParser as configparser
 elif sys.version_info > (3, 0):
     import configparser
-from backup2swift import utils
+
 
 #: connection timeout
 #: see also http://goo.gl/6KIJnc

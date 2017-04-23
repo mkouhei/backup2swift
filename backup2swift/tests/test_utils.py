@@ -2,12 +2,12 @@
 """ backup2swift.tests.test_utils """
 import unittest
 import sys
+from backup2swift import utils as u
+from backup2swift.tests import test_vars as v
 if sys.version_info < (3, 0):
     from StringIO import StringIO
 else:
     from io import StringIO
-from backup2swift import utils as u
-from backup2swift.tests import test_vars as v
 
 
 class UtilsTests(unittest.TestCase):
