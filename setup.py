@@ -1,21 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-    Copyright (C) 2013-2015 Kouhei Maeda <mkouhei@palmtb.net>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
-
+"""setup.py."""
 import os.path
 import sys
 from setuptools import setup, find_packages
@@ -61,6 +45,7 @@ classifiers = [
     "Programming Language :: Python :: 3.3",
     "Programming Language :: Python :: 3.4",
     "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Internet",
@@ -74,18 +59,12 @@ long_description = (
     read_content(os.path.join("docs", "HISTORY.rst")))
 
 requires = ['setuptools',
-            'swiftsc>=0.7.1']
+            'swiftsc>=0.7.2']
 extras_require = {
     'reST': ['Sphinx']}
 
 if os.environ.get('READTHEDOCS', None):
     extras_require['reST'].append('recommonmark')
-
-with open('requirements.txt', 'w') as fobj:
-    fobj.write('\n'.join(requires))
-
-with open('extras_requirement.txt', 'w') as fobj:
-    fobj.write('\n'.join(extras_require.get('reST')))
 
 setup(name='backup2swift',
       version=backup2swift.__version__,
