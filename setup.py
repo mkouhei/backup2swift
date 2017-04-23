@@ -59,18 +59,12 @@ long_description = (
     read_content(os.path.join("docs", "HISTORY.rst")))
 
 requires = ['setuptools',
-            'swiftsc>=0.7.1']
+            'swiftsc>=0.7.2']
 extras_require = {
     'reST': ['Sphinx']}
 
 if os.environ.get('READTHEDOCS', None):
     extras_require['reST'].append('recommonmark')
-
-with open('requirements.txt', 'w') as fobj:
-    fobj.write('\n'.join(requires))
-
-with open('extras_requirement.txt', 'w') as fobj:
-    fobj.write('\n'.join(extras_require.get('reST')))
 
 setup(name='backup2swift',
       version=backup2swift.__version__,
